@@ -15,6 +15,7 @@ class Logout : BaseActivity<LogoutBinding>(LogoutBinding::inflate) {
         super.onStart()
         prefs.clear()
         nav.toSplash(this)
+        finishAffinity()
     }
 
 }

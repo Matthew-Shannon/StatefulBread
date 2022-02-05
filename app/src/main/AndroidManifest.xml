@@ -12,6 +12,7 @@
         android:name=".App">
         <activity
             android:name=".view.auth.Splash"
+            android:theme="@style/ColdStart"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

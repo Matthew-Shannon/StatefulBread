@@ -26,7 +26,6 @@ class Register : BaseActivity<RegisterBinding>(RegisterBinding::inflate) {
         val email = binding.emailEditText.text?.trim()?.toString() ?: ""
         val zipCode = binding.zipCodeEditText.text?.trim()?.toString() ?: ""
         val password = binding.passwordEditText.text?.trim()?.toString() ?: ""
-        Log.d(TAG, "email: $email password: $password")
 
         if (name.isEmpty()) { binding.nameEditText.error = "Blank Name"; return }
         if (email.isEmpty()) { binding.emailEditText.error = "Blank Email Address"; return }
