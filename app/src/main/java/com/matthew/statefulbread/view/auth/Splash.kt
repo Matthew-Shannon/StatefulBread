@@ -1,17 +1,18 @@
-package com.matthew.statefulbread.view
+package com.matthew.statefulbread.view.auth
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.matthew.statefulbread.App
 import com.matthew.statefulbread.TAG
 import com.matthew.statefulbread.databinding.ActivitySplashBinding
+import com.matthew.statefulbread.service.INav
 import com.matthew.statefulbread.service.IPrefs
 
 class Splash : AppCompatActivity() {
 
     private val prefs: IPrefs by lazy { App.castToApp(this).prefs }
+    private val nav: INav by lazy { App.castToApp(this).nav }
     private lateinit var binding: ActivitySplashBinding
 
     override fun onCreate(bundle: Bundle?) {
@@ -25,11 +26,7 @@ class Splash : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart")
-        if (prefs.getString("email") != "") navToHome() else navToLogin()
+        if (prefs.getString("password") != "") nav.toHome(this) else nav.toLogin(this)
     }
-
-    private fun navToHome() = startActivity(Intent(this, Home::class.java))
-
-    private fun navToLogin() = startActivity(Intent(this, Login::class.java))
 
 }

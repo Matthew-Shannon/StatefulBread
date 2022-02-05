@@ -32,9 +32,7 @@ class Prefs(val sharedPrefs: SharedPreferences) : IPrefs {
     override fun clear() = sharedPrefs.edit().clear().apply()
 
     companion object {
-        fun def(context: Context): IPrefs {
-            return Prefs(context.getSharedPreferences("Bread", Context.MODE_PRIVATE))
-        }
+        fun def(context: Context): IPrefs = Prefs(context.getSharedPreferences("Bread", Context.MODE_PRIVATE))
     }
 
 }

@@ -1,4 +1,4 @@
-package com.matthew.statefulbread.view
+package com.matthew.statefulbread.view.auth
 
 import android.os.Bundle
 import android.util.Log
@@ -7,12 +7,14 @@ import com.matthew.statefulbread.App
 import com.matthew.statefulbread.TAG
 import com.matthew.statefulbread.databinding.ActivityRegisterBinding
 import com.matthew.statefulbread.hideKeyboard
+import com.matthew.statefulbread.service.INav
 import com.matthew.statefulbread.service.IPrefs
 
 class Register : AppCompatActivity() {
 
-    private lateinit var binding: ActivityRegisterBinding
     private val prefs: IPrefs by lazy { App.castToApp(this).prefs }
+    private val nav: INav by lazy { App.castToApp(this).nav }
+    private lateinit var binding: ActivityRegisterBinding
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
@@ -25,11 +27,9 @@ class Register : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart")
-        binding.backButton.setOnClickListener { navBack() }
+        binding.backButton.setOnClickListener { nav.goBack(this) }
         binding.registerButton.setOnClickListener { onSubmit() }
     }
-
-    private fun navBack() = onBackPressed()
 
     private fun onSubmit() {
         hideKeyboard(binding.root)
@@ -48,8 +48,7 @@ class Register : AppCompatActivity() {
         prefs.setString("name", name)
         prefs.setString("email", email)
         prefs.setString("zipCode", zipCode)
-        prefs.setString("password", password)
-        navBack()
+        nav.goBack(this)
     }
 
 }

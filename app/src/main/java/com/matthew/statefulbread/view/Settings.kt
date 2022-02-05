@@ -1,6 +1,5 @@
 package com.matthew.statefulbread.view
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,20 +11,16 @@ import com.matthew.statefulbread.App
 import com.matthew.statefulbread.TAG
 import com.matthew.statefulbread.databinding.ActivitySettingsBinding
 import com.matthew.statefulbread.databinding.CellSettingsBinding
+import com.matthew.statefulbread.service.INav
 import com.matthew.statefulbread.service.IPrefs
 
 class Settings : AppCompatActivity() {
 
-    private lateinit var binding: ActivitySettingsBinding
     private val prefs: IPrefs by lazy { App.castToApp(this).prefs }
-    private val items: List<String> by lazy {
-        listOf(
-            "Name: "+prefs.getString("name"),
-            "Email: "+prefs.getString("email"),
-            "Zip Code: "+prefs.getString("zipCode"),
-            "Password: "+prefs.getString("password"),
-        )
-    }
+    private val nav: INav by lazy { App.castToApp(this).nav }
+    private lateinit var binding: ActivitySettingsBinding
+
+    private val items: List<String> by lazy { getData(prefs) }
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
@@ -33,7 +28,6 @@ class Settings : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = "Settings"
-
     }
 
     override fun onStart() {
@@ -41,25 +35,24 @@ class Settings : AppCompatActivity() {
         Log.d(TAG, "onStart")
         binding.recyclerView.adapter = SettingsAdapter(layoutInflater, items)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.logoutButton.setOnClickListener { onLogout() }
+        binding.logoutButton.setOnClickListener { nav.toLogout(this) }
     }
 
-    private fun onLogout() {
-        prefs.clear()
-        startActivity(Intent(this, Login::class.java))
+    companion object {
+        fun getData(prefs: IPrefs) : List<String> = listOf(
+            "Name: "+prefs.getString("name"),
+            "Email: "+prefs.getString("email"),
+            "Zip Code: "+prefs.getString("zipCode"),
+            "Password: "+prefs.getString("password"),
+        )
     }
 
 }
 
 class SettingsAdapter(private val inflater: LayoutInflater, private val items: List<String>) : RecyclerView.Adapter<SettingsAdapter.ViewHolder>() {
+    inner class ViewHolder(private val binding: CellSettingsBinding) : RecyclerView.ViewHolder(binding.root) { fun bind(value: String) { binding.cellTextView.text = value } }
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder = ViewHolder(CellSettingsBinding.inflate(inflater, parent, false))
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(items[position])
     override fun getItemCount(): Int = items.size
-
-    inner class ViewHolder(private val binding: CellSettingsBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(value: String) {
-            binding.cellTextView.text = value
-        }
-    }
 
 }
