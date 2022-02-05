@@ -1,30 +1,23 @@
 package com.matthew.statefulbread.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.matthew.statefulbread.App
-import com.matthew.statefulbread.TAG
+import com.matthew.statefulbread.core.BaseActivity
 import com.matthew.statefulbread.databinding.ActivitySettingsBinding
 import com.matthew.statefulbread.databinding.CellSettingsBinding
-import com.matthew.statefulbread.service.INav
 import com.matthew.statefulbread.service.IPrefs
 
-class Settings : AppCompatActivity() {
+class Settings : BaseActivity() {
 
-    private val prefs: IPrefs by lazy { App.castToApp(this).prefs }
-    private val nav: INav by lazy { App.castToApp(this).nav }
     private lateinit var binding: ActivitySettingsBinding
 
     private val items: List<String> by lazy { getData(prefs) }
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
-        Log.d(TAG, "onCreate")
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = "Settings"
@@ -32,7 +25,6 @@ class Settings : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Log.d(TAG, "onStart")
         binding.recyclerView.adapter = SettingsAdapter(layoutInflater, items)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.logoutButton.setOnClickListener { nav.toLogout(this) }

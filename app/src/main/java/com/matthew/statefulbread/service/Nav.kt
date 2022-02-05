@@ -27,7 +27,7 @@ class Nav : INav {
     override fun goBack(context: Context) { (context as? Activity)?.onBackPressed() }
     override fun toSplash(context: Context) = navTo(context, Splash::class.java)
     override fun toRegister(context: Context) = navTo(context, Register::class.java)
-    override fun toLogin(context: Context) = navTo(context, Login::class.java)
+    override fun toLogin(context: Context) = navToAndClear(context, Login::class.java)
     override fun toLogout(context: Context) = navTo(context, Logout::class.java)
     override fun toHome(context: Context) = navToAndClear(context, Home::class.java)
     override fun toSettings(context: Context) = navTo(context, Settings::class.java)
