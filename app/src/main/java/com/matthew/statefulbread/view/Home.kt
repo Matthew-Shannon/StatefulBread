@@ -2,16 +2,12 @@ package com.matthew.statefulbread.view
 
 import android.os.Bundle
 import com.matthew.statefulbread.core.BaseActivity
-import com.matthew.statefulbread.databinding.ActivityHomeBinding
+import com.matthew.statefulbread.databinding.HomeBinding
 
-class Home : BaseActivity() {
-
-    private lateinit var binding: ActivityHomeBinding
+class Home : BaseActivity<HomeBinding>(HomeBinding::inflate) {
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
-        binding = ActivityHomeBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         supportActionBar?.title = "Home"
     }
 

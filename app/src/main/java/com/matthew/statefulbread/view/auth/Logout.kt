@@ -2,16 +2,12 @@ package com.matthew.statefulbread.view.auth
 
 import android.os.Bundle
 import com.matthew.statefulbread.core.BaseActivity
-import com.matthew.statefulbread.databinding.ActivityLogoutBinding
+import com.matthew.statefulbread.databinding.LogoutBinding
 
-class Logout : BaseActivity() {
-
-    private lateinit var binding: ActivityLogoutBinding
+class Logout : BaseActivity<LogoutBinding>(LogoutBinding::inflate) {
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
-        binding = ActivityLogoutBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         supportActionBar?.hide()
     }
 

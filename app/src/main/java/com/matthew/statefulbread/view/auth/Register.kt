@@ -4,17 +4,13 @@ import android.os.Bundle
 import android.util.Log
 import com.matthew.statefulbread.TAG
 import com.matthew.statefulbread.core.BaseActivity
-import com.matthew.statefulbread.databinding.ActivityRegisterBinding
+import com.matthew.statefulbread.databinding.RegisterBinding
 import com.matthew.statefulbread.hideKeyboard
 
-class Register : BaseActivity() {
-
-    private lateinit var binding: ActivityRegisterBinding
+class Register : BaseActivity<RegisterBinding>(RegisterBinding::inflate) {
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
-        binding = ActivityRegisterBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         supportActionBar?.hide()
     }
 

@@ -2,17 +2,13 @@ package com.matthew.statefulbread.view.auth
 
 import android.os.Bundle
 import com.matthew.statefulbread.core.BaseActivity
-import com.matthew.statefulbread.databinding.ActivityLoginBinding
+import com.matthew.statefulbread.databinding.LoginBinding
 import com.matthew.statefulbread.hideKeyboard
 
-class Login : BaseActivity() {
-    
-    private lateinit var binding: ActivityLoginBinding
+class Login : BaseActivity<LoginBinding>(LoginBinding::inflate) {
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         supportActionBar?.hide()
     }
 

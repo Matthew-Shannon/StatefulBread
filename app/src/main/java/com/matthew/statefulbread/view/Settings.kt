@@ -6,20 +6,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.matthew.statefulbread.core.BaseActivity
-import com.matthew.statefulbread.databinding.ActivitySettingsBinding
+import com.matthew.statefulbread.databinding.SettingsBinding
 import com.matthew.statefulbread.databinding.CellSettingsBinding
 import com.matthew.statefulbread.service.IPrefs
 
-class Settings : BaseActivity() {
-
-    private lateinit var binding: ActivitySettingsBinding
+class Settings : BaseActivity<SettingsBinding>(SettingsBinding::inflate) {
 
     private val items: List<String> by lazy { getData(prefs) }
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         supportActionBar?.title = "Settings"
     }
 
