@@ -13,7 +13,7 @@ class Home : BaseActivity<HomeBinding>(HomeBinding::inflate) {
 
     override fun onStart() {
         super.onStart()
-        binding.settingsButton.setOnClickListener { nav.toSettings(this) }
+        //binding.settingsButton.setOnClickListener { nav.toSettings(this) }
     }
 
 }
