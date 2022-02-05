@@ -15,8 +15,8 @@ class Splash : BaseActivity<SplashBinding>(SplashBinding::inflate) {
 
     override fun onStart() {
         super.onStart()
-//        if (prefs.getString("password") != "") nav.toHome(this) else nav.toLogin(this)
-//        finish()
+        if (prefs.getString("password") != "") nav.toHome(this) else nav.toLogin(this)
+        finish()
     }
 
 }
