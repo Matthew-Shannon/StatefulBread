@@ -5,8 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
-import com.matthew.statefulbread.App
-import com.matthew.statefulbread.TAG
 import com.matthew.statefulbread.service.INav
 import com.matthew.statefulbread.service.IPrefs
 

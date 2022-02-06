@@ -1,11 +1,9 @@
 package com.matthew.statefulbread.view.auth
 
 import android.os.Bundle
-import android.util.Log
-import com.matthew.statefulbread.TAG
 import com.matthew.statefulbread.core.BaseActivity
 import com.matthew.statefulbread.databinding.RegisterBinding
-import com.matthew.statefulbread.hideKeyboard
+import com.matthew.statefulbread.core.hideKeyboard
 
 class Register : BaseActivity<RegisterBinding>(RegisterBinding::inflate) {
 

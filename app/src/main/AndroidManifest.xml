@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.StatefulBread"
-        android:name=".App">
+        android:name=".core.App">
         <activity
             android:name=".view.auth.Splash"
             android:theme="@style/ColdStart"

@@ -1,4 +1,4 @@
-package com.matthew.statefulbread
+package com.matthew.statefulbread.core
 
 import android.app.Activity
 import android.content.Context

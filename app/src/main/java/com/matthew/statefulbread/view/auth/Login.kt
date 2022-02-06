@@ -3,7 +3,7 @@ package com.matthew.statefulbread.view.auth
 import android.os.Bundle
 import com.matthew.statefulbread.core.BaseActivity
 import com.matthew.statefulbread.databinding.LoginBinding
-import com.matthew.statefulbread.hideKeyboard
+import com.matthew.statefulbread.core.hideKeyboard
 
 class Login : BaseActivity<LoginBinding>(LoginBinding::inflate) {
 
