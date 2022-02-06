@@ -11,6 +11,7 @@ import com.matthew.statefulbread.core.TAG
 import com.matthew.statefulbread.repo.IDataService
 import com.matthew.statefulbread.repo.INavService
 import com.matthew.statefulbread.repo.IPrefsService
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
 
 abstract class BaseFragment<Binding: ViewBinding>(val binder: (LayoutInflater) -> Binding) : Fragment() {
@@ -19,6 +20,7 @@ abstract class BaseFragment<Binding: ViewBinding>(val binder: (LayoutInflater) -
     @Inject lateinit var dataService: IDataService
     @Inject lateinit var prefsService: IPrefsService
     val binding: Binding by lazy { binder(layoutInflater) }
+    val disposable: CompositeDisposable by lazy { CompositeDisposable() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?): View? {
         Log.d(TAG, "onCreateView")
@@ -33,6 +35,7 @@ abstract class BaseFragment<Binding: ViewBinding>(val binder: (LayoutInflater) -
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop")
+        disposable.dispose()
     }
 
     override fun onDestroy() {

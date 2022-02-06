@@ -1,26 +1,62 @@
 package com.matthew.statefulbread.view.main.frags
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.matthew.statefulbread.core.setNightMode
 import com.matthew.statefulbread.core.view.BaseFragment
-import com.matthew.statefulbread.core.toggleNightMode
 import com.matthew.statefulbread.databinding.CellSettingsBinding
 import com.matthew.statefulbread.databinding.SettingsBinding
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.kotlin.addTo
 
 @AndroidEntryPoint
 class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
 
-    private val items: List<String> by lazy { dataService.getUser() }
+    private val adapter: SettingsAdapter by lazy { SettingsAdapter(layoutInflater, items) }
+    private val items: MutableList<String> by lazy { mutableListOf() }
 
     override fun onResume() {
         super.onResume()
-        binding.recyclerView.adapter = SettingsAdapter(layoutInflater, items)
+
+        binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(activity)
-        binding.logoutButton.setOnClickListener { prefsService.clear(); navService.toSplash() }
-        binding.dayNightButton.setOnClickListener { activity?.toggleNightMode() }
+
+        dataService.getUser()
+            .subscribe(::setupRecyclerView)
+            .addTo(disposable)
+
+        prefsService.getDarkModeSingle()
+            .subscribe(::setupDarkmodeCheckbox)
+            .addTo(disposable)
+
+        binding.logoutButton.setOnClickListener { onLogout() }
+
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun setupRecyclerView(items: List<String>) {
+        this.items.clear()
+        this.items.addAll(items)
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun setupDarkmodeCheckbox(mode: Boolean) {
+        binding.nightModeCheckbox.isChecked = mode
+        binding.nightModeCheckbox.setOnClickListener { onNightModeToggle() }
+    }
+
+    private fun onNightModeToggle() {
+        val mode = !prefsService.getDarkMode()
+        prefsService.setDarkMode(mode)
+        activity?.setNightMode(mode)
+    }
+
+    private fun onLogout() {
+        prefsService.clear()
+        navService.toSplash()
     }
 
 }

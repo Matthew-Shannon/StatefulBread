@@ -1,35 +1,50 @@
 package com.matthew.statefulbread.repo
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-
+import io.reactivex.rxjava3.core.Observable
 
 interface IPrefsService {
 
-    fun getString(key: String): String
-    fun setString(key: String, value: String)
+    fun getName(): String
+    fun setName(value: String)
 
-    fun getBoolean(key: String): Boolean
-    fun setBoolean(key: String, value: Boolean)
+    fun getEmail(): String
+    fun setEmail(value: String)
 
-    fun getInt(key: String): Int
-    fun setInt(key: String, value: Int)
+    fun getZipCode(): String
+    fun setZipCode(value: String)
+
+    fun getPassword(): String
+    fun setPassword(value: String)
+
+    fun getDarkMode(): Boolean
+    fun getDarkModeSingle(): Observable<Boolean>
+    fun setDarkMode(value: Boolean)
 
     fun clear()
 }
 
 class PrefsService(private val context: Context) : IPrefsService {
 
-    private val sharedPrefs: SharedPreferences by lazy { context.getSharedPreferences("Bread", Context.MODE_PRIVATE) }
+    private val sharedPrefs: SharedPreferences by lazy { context.getSharedPreferences("Bread", MODE_PRIVATE) }
 
-    override fun getString(key: String): String = sharedPrefs.getString(key, "") ?: ""
-    override fun setString(key: String, value: String) = sharedPrefs.edit().putString(key, value).apply()
+    override fun getName(): String = sharedPrefs.getString("name", "")!!
+    override fun setName(value: String) = sharedPrefs.edit().putString("name", value).apply()
 
-    override fun getBoolean(key: String): Boolean = sharedPrefs.getBoolean(key, false)
-    override fun setBoolean(key: String, value: Boolean) = sharedPrefs.edit().putBoolean(key, value).apply()
+    override fun getEmail(): String = sharedPrefs.getString("email", "")!!
+    override fun setEmail(value: String) = sharedPrefs.edit().putString("email", value).apply()
 
-    override fun getInt(key: String): Int = sharedPrefs.getInt(key, 0)
-    override fun setInt(key: String, value: Int) = sharedPrefs.edit().putInt(key, value).apply()
+    override fun getZipCode(): String = sharedPrefs.getString("zipCode", "")!!
+    override fun setZipCode(value: String) = sharedPrefs.edit().putString("zipCode", value).apply()
+
+    override fun getPassword(): String = sharedPrefs.getString("password", "")!!
+    override fun setPassword(value: String) = sharedPrefs.edit().putString("password", value).apply()
+
+    override fun getDarkMode(): Boolean = sharedPrefs.getBoolean("darkMode", false)
+    override fun getDarkModeSingle(): Observable<Boolean> = Observable.just(getDarkMode())
+    override fun setDarkMode(value: Boolean) = sharedPrefs.edit().putBoolean("darkMode", value).apply()
 
     override fun clear() = sharedPrefs.edit().clear().apply()
 

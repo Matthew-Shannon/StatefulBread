@@ -1,14 +1,20 @@
 package com.matthew.statefulbread.repo
 
+import io.reactivex.rxjava3.core.Observable
+
 interface IDataService {
-    fun getUser(): List<String>
+    fun getUser(): Observable<List<String>>
 }
 
 class DataService(val prefsService: IPrefsService): IDataService {
-    override fun getUser(): List<String> = listOf(
-        "Name: "+prefsService.getString("name"),
-        "Email: "+prefsService.getString("email"),
-        "Zip Code: "+prefsService.getString("zipCode"),
-        "Password: "+prefsService.getString("password"),
+    override fun getUser(): Observable<List<String>> = Observable.just(
+        listOf(
+            "Name: "+prefsService.getName(),
+            "Email: "+prefsService.getEmail(),
+            "Zip Code: "+prefsService.getZipCode(),
+            "Password: "+prefsService.getPassword(),
+        )
     )
+
+
 }
