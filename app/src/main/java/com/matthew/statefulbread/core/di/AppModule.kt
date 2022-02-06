@@ -1,10 +1,10 @@
 package com.matthew.statefulbread.core.di
 
 import android.app.Application
-import com.matthew.statefulbread.repo.Data
-import com.matthew.statefulbread.repo.IData
-import com.matthew.statefulbread.repo.IPrefs
-import com.matthew.statefulbread.repo.Prefs
+import com.matthew.statefulbread.repo.DataService
+import com.matthew.statefulbread.repo.IDataService
+import com.matthew.statefulbread.repo.IPrefsService
+import com.matthew.statefulbread.repo.PrefsService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,10 +17,10 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providePrefs(app: Application): IPrefs = Prefs(app)
+    fun providePrefs(app: Application): IPrefsService = PrefsService(app)
 
     @Provides
     @Singleton
-    fun provideData(prefs: IPrefs): IData = Data(prefs)
+    fun provideData(prefsService: IPrefsService): IDataService = DataService(prefsService)
 
 }

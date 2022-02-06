@@ -1,10 +1,10 @@
-package com.matthew.statefulbread.view.main.fragments
+package com.matthew.statefulbread.view.main.frags
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.matthew.statefulbread.core.BaseFragment
+import com.matthew.statefulbread.core.view.BaseFragment
 import com.matthew.statefulbread.core.toggleNightMode
 import com.matthew.statefulbread.databinding.CellSettingsBinding
 import com.matthew.statefulbread.databinding.SettingsBinding
@@ -13,13 +13,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
 
-    private val items: List<String> by lazy { data.getUser() }
+    private val items: List<String> by lazy { dataService.getUser() }
 
     override fun onResume() {
         super.onResume()
         binding.recyclerView.adapter = SettingsAdapter(layoutInflater, items)
         binding.recyclerView.layoutManager = LinearLayoutManager(activity)
-        binding.logoutButton.setOnClickListener { prefs.clear(); nav.toSplash() }
+        binding.logoutButton.setOnClickListener { prefsService.clear(); navService.toSplash() }
         binding.dayNightButton.setOnClickListener { activity?.toggleNightMode() }
     }
 

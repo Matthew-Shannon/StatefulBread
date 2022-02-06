@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 
-interface IPrefs {
+interface IPrefsService {
 
     fun getString(key: String): String
     fun setString(key: String, value: String)
@@ -18,7 +18,7 @@ interface IPrefs {
     fun clear()
 }
 
-class Prefs(private val context: Context) : IPrefs {
+class PrefsService(private val context: Context) : IPrefsService {
 
     private val sharedPrefs: SharedPreferences by lazy { context.getSharedPreferences("Bread", Context.MODE_PRIVATE) }
 

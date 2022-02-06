@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.main.fragments.Search">
+    tools:context=".view.main.frags.Search">
 
     <com.google.android.material.textview.MaterialTextView
         style="@style/TextAppearance.MaterialComponents.Headline4"

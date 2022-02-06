@@ -1,7 +1,7 @@
-package com.matthew.statefulbread.view.auth.fragments
+package com.matthew.statefulbread.view.auth.frags
 
 import com.matthew.statefulbread.R
-import com.matthew.statefulbread.core.BaseFragment
+import com.matthew.statefulbread.core.view.BaseFragment
 import com.matthew.statefulbread.core.hideKeyboard
 import com.matthew.statefulbread.databinding.RegisterBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -11,7 +11,7 @@ class Register : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
 
     override fun onResume() {
         super.onResume()
-        binding.backButton.setOnClickListener { nav.toLogin(R.id.splash_container) }
+        binding.backButton.setOnClickListener { navService.toLogin(R.id.splash_container) }
         binding.registerButton.setOnClickListener { onSubmit() }
     }
 
@@ -27,12 +27,12 @@ class Register : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
         if (!email.contains("@")) { binding.emailEditText.error = "Invalid Email Address"; return }
         if (zipCode.isEmpty()) { binding.zipCodeEditText.error = "Blank Zip Code"; return }
         if (password.isEmpty()) { binding.passwordEditText.error = "Blank Password"; return }
-        if (email == prefs.getString("email")) { binding.emailEditText.error = "Email Address Already Exists"; return }
+        if (email == prefsService.getString("email")) { binding.emailEditText.error = "Email Address Already Exists"; return }
 
-        prefs.setString("name", name)
-        prefs.setString("email", email)
-        prefs.setString("zipCode", zipCode)
-        nav.toLogin(R.id.splash_container)
+        prefsService.setString("name", name)
+        prefsService.setString("email", email)
+        prefsService.setString("zipCode", zipCode)
+        navService.toLogin(R.id.splash_container)
     }
 
 }
