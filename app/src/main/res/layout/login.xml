@@ -5,30 +5,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.auth.Login">
+    tools:context=".view.auth.fragments.Login">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/TextAppearance.MaterialComponents.Headline4"
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
         android:gravity="center"
-        android:text="Stateful Bread"
+        android:text="@string/stateful_bread"
         android:textAlignment="center"
-        android:textColor="?attr/colorPrimary"
-        android:textAppearance="@android:style/TextAppearance.Material.Display1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Material3.CardView.Elevated"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        app:cardElevation="8dp"
-        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title">
@@ -40,52 +39,50 @@
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputEditText
+                style="@style/ThemeOverlay.Material3.TextInputEditText"
                 android:id="@+id/emailEditText"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textNoSuggestions"
+                android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:hint="Email"/>
+                android:hint="@string/email"
+                android:inputType="textNoSuggestions" />
 
             <com.google.android.material.textfield.TextInputEditText
+                style="@style/ThemeOverlay.Material3.TextInputEditText"
                 android:id="@+id/passwordEditText"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textPassword"
+                android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_marginBottom="0dp"
-                android:hint="Password"/>
+                android:hint="@string/password"
+                android:inputType="textPassword" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_height="match_parent"
                 android:layout_marginEnd="8dp"
-                android:gravity="end">
+                android:gravity="end"
+                android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:id="@+id/registerButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:textColor="?attr/colorPrimary"
-                    android:text="Register"/>
+                    android:text="@string/register" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/loginButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:backgroundTint="?attr/colorSecondary"
-                    android:text="Login"/>
+                    android:text="@string/login" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-    </androidx.cardview.widget.CardView>
-
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

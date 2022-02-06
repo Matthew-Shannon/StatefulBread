@@ -1,4 +1,4 @@
-package com.matthew.statefulbread.service
+package com.matthew.statefulbread.repo
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -18,7 +18,9 @@ interface IPrefs {
     fun clear()
 }
 
-class Prefs(val sharedPrefs: SharedPreferences) : IPrefs {
+class Prefs(private val context: Context) : IPrefs {
+
+    private val sharedPrefs: SharedPreferences by lazy { context.getSharedPreferences("Bread", Context.MODE_PRIVATE) }
 
     override fun getString(key: String): String = sharedPrefs.getString(key, "") ?: ""
     override fun setString(key: String, value: String) = sharedPrefs.edit().putString(key, value).apply()
@@ -30,9 +32,5 @@ class Prefs(val sharedPrefs: SharedPreferences) : IPrefs {
     override fun setInt(key: String, value: Int) = sharedPrefs.edit().putInt(key, value).apply()
 
     override fun clear() = sharedPrefs.edit().clear().apply()
-
-    companion object {
-        fun def(context: Context): IPrefs = Prefs(context.getSharedPreferences("Bread", Context.MODE_PRIVATE))
-    }
 
 }

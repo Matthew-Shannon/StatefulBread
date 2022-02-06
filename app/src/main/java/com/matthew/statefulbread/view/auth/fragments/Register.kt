@@ -1,25 +1,22 @@
-package com.matthew.statefulbread.view.auth
+package com.matthew.statefulbread.view.auth.fragments
 
-import android.os.Bundle
-import com.matthew.statefulbread.core.BaseActivity
-import com.matthew.statefulbread.databinding.RegisterBinding
+import com.matthew.statefulbread.R
+import com.matthew.statefulbread.core.BaseFragment
 import com.matthew.statefulbread.core.hideKeyboard
+import com.matthew.statefulbread.databinding.RegisterBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-class Register : BaseActivity<RegisterBinding>(RegisterBinding::inflate) {
+@AndroidEntryPoint
+class Register : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
 
-    override fun onCreate(bundle: Bundle?) {
-        super.onCreate(bundle)
-        supportActionBar?.hide()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        binding.backButton.setOnClickListener { nav.goBack(this) }
+    override fun onResume() {
+        super.onResume()
+        binding.backButton.setOnClickListener { nav.toLogin(R.id.splash_container) }
         binding.registerButton.setOnClickListener { onSubmit() }
     }
 
     private fun onSubmit() {
-        hideKeyboard(binding.root)
+        activity?.hideKeyboard(binding.root)
         val name = binding.nameEditText.text?.trim()?.toString() ?: ""
         val email = binding.emailEditText.text?.trim()?.toString() ?: ""
         val zipCode = binding.zipCodeEditText.text?.trim()?.toString() ?: ""
@@ -31,10 +28,11 @@ class Register : BaseActivity<RegisterBinding>(RegisterBinding::inflate) {
         if (zipCode.isEmpty()) { binding.zipCodeEditText.error = "Blank Zip Code"; return }
         if (password.isEmpty()) { binding.passwordEditText.error = "Blank Password"; return }
         if (email == prefs.getString("email")) { binding.emailEditText.error = "Email Address Already Exists"; return }
+
         prefs.setString("name", name)
         prefs.setString("email", email)
         prefs.setString("zipCode", zipCode)
-        nav.goBack(this)
+        nav.toLogin(R.id.splash_container)
     }
 
 }
