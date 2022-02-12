@@ -1,10 +1,8 @@
 package com.matthew.statefulbread.core.di
 
 import android.app.Application
-import com.matthew.statefulbread.repo.DataService
-import com.matthew.statefulbread.repo.IDataService
-import com.matthew.statefulbread.repo.IPrefsService
-import com.matthew.statefulbread.repo.PrefsService
+import com.matthew.statefulbread.core.Config
+import com.matthew.statefulbread.repo.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,10 +15,14 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providePrefs(app: Application): IPrefsService = PrefsService(app)
+    fun provideDarkMode(prefs: IPrefs): ITheme = Theme(prefs)
 
     @Provides
     @Singleton
-    fun provideData(prefsService: IPrefsService): IDataService = DataService(prefsService)
+    fun provideStorage(app: Application): IStorage = Storage.def(app, Config.DATABASE_NAME)
+
+    @Provides
+    @Singleton
+    fun providePrefs(app: Application): IPrefs = Prefs.def(app, Config.SHAREDPREFERENCES_NAME)
 
 }

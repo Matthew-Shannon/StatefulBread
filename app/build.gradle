@@ -1,83 +1,182 @@
-plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
-
-}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: "com.dicedmelon.gradle.jacoco-android"
 
 android {
     compileSdkVersion 31
-    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.matthew.statefulbread"
         minSdkVersion 24
-        targetSdkVersion 31
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+//        javaCompileOptions {
+//            annotationProcessorOptions {
+//                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+//            }
+//        }
     }
 
-    buildFeatures {
-        viewBinding true
-    }
+    buildFeatures { viewBinding true }
 
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
+    kotlinOptions { jvmTarget = "1.8" }
+    testOptions {
+        //dexecution "ANDROID_TEST_ORCHESTRATOR"
+        animationsDisabled true
+
+        unitTests {
+            includeAndroidResources = true
+        }
     }
+
 }
 
 dependencies {
 
     // Core
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation "androidx.core:core-ktx:1.7.0"
+    implementation "androidx.appcompat:appcompat:$androidx_version"
+    implementation "com.google.android.material:material:1.5.0"
 
-    // Testing
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    // Dagger
+    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
+    implementation "com.google.dagger:hilt-android:$dagger_version"
+    kapt "com.google.dagger:hilt-android-compiler:$dagger_version"
 
-    // DI
-    implementation 'com.google.dagger:hilt-android:2.40.5'
-    kapt 'com.google.dagger:hilt-compiler:2.40.5'
-    androidTestImplementation  'com.google.dagger:hilt-android-testing:2.40.5'
-    kaptAndroidTest 'com.google.dagger:hilt-compiler:2.40.5'
-    testImplementation 'com.google.dagger:hilt-android-testing:2.40.5'
-    kaptTest 'com.google.dagger:hilt-compiler:2.40.5'
+    // Rx
+    implementation "io.reactivex.rxjava3:rxjava:$rxjava_version"
+    implementation "io.reactivex.rxjava3:rxandroid:$rxjava_version"
+    implementation "io.reactivex.rxjava3:rxkotlin:$rxjava_version"
 
-    // RX
-    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
-    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
-    implementation 'io.reactivex.rxjava3:rxkotlin:3.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-core:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-appcompat:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-drawerlayout:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-leanback:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-recyclerview:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-slidingpanelayout:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-swiperefreshlayout:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager2:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-material:4.0.0'
+    // Room DB
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.room:room-rxjava3:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"
+
+    // RX Dogtag
+    implementation("com.uber.rxdogtag2:rxdogtag:2.0.1")
+
+
+    // Rx Bindings
+    implementation "com.jakewharton.rxbinding4:rxbinding:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-core:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-appcompat:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-drawerlayout:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-leanback:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-recyclerview:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-slidingpanelayout:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-swiperefreshlayout:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-viewpager:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-viewpager2:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding4:rxbinding-material:$rxbinding_version"
+
+    // Instrumentation Tests
+    androidTestImplementation "junit:junit:$junit_version"
+    androidTestImplementation "androidx.test.ext:junit:$junit_ext_version"
+    androidTestImplementation "androidx.test:core:$androidx_version"
+    androidTestImplementation "androidx.test:rules:$androidx_version"
+    androidTestImplementation "androidx.test:runner:$androidx_version"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$expresso_version"
+    androidTestUtil "androidx.test:orchestrator:$androidx_version"
+
+    // Unit Tests
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "androidx.test.ext:junit:$junit_ext_version"
+    testImplementation "androidx.test:core:$androidx_version"
+    testImplementation "androidx.test:core-ktx:$androidx_version"
+    testImplementation "androidx.test.espresso:espresso-core:$expresso_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
+    testImplementation "io.mockk:mockk-agent-jvm:$mockk_version"
+
+
 }
 
-kapt {
-    correctErrorTypes true
+kapt { correctErrorTypes true }
+
+jacoco { toolVersion = "$jacoco_version" }
+
+hilt { enableTransformForLocalTests = true }
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
+
+jacocoAndroidUnitTestReport {
+    csv.enabled false
+    html.enabled true
+    xml.enabled true
+    excludes += [
+        // data binding
+        'android/databinding/**/*.class',
+        '**/android/databinding/*Binding.class',
+        '**/android/databinding/*',
+        '**/androidx/databinding/*',
+        '**/databinding/*',
+        '**/BR.*',
+        // android
+        '**/R.class',
+        '**/R$*.class',
+        '**/BuildConfig.*',
+        '**/Manifest*.*',
+        '**/*Test*.*',
+        'android/**/*.*',
+        // dagger
+        '**/*_MembersInjector.class',
+        '**/Dagger*Component.class',
+        '**/Dagger*Component$Builder.class',
+        '**/*Module_*Factory.class',
+        '**/di/module/*',
+        '**/*_Factory*.*',
+        '**/*Module*.*',
+        '**/*Dagger*.*',
+        '**/*Hilt*.*',
+        // kotlin
+        '**/*MapperImpl*.*',
+        '**/*$ViewInjector*.*',
+        '**/*$ViewBinder*.*',
+        '**/BuildConfig.*',
+        '**/*Component*.*',
+        '**/*BR*.*',
+        '**/Manifest*.*',
+        '**/*$Lambda$*.*',
+        '**/*Companion*.*',
+        '**/*Module*.*',
+        '**/*Dagger*.*',
+        '**/*Hilt*.*',
+        '**/*MembersInjector*.*',
+        '**/*_MembersInjector.class',
+        '**/*_Factory*.*',
+        '**/*_Provide*Factory*.*',
+        '**/*Extensions*.*',
+        '**/hilt_aggregated_deps/*',
+        '**/dagger/hilt/internal/aggregatedroot/codegen/*',
+        // sealed and data classes
+        '**/*$Result.*',
+        '**/*$Result$*.*'
+    ]
 }

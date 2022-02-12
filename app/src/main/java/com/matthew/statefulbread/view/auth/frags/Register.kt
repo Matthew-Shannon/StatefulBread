@@ -1,38 +1,65 @@
 package com.matthew.statefulbread.view.auth.frags
 
-import com.matthew.statefulbread.R
+import com.jakewharton.rxbinding4.view.clicks
+import com.matthew.statefulbread.core.getValue
 import com.matthew.statefulbread.core.hideKeyboard
 import com.matthew.statefulbread.core.view.BaseFragment
 import com.matthew.statefulbread.databinding.RegisterBinding
+import com.matthew.statefulbread.repo.INav
+import com.matthew.statefulbread.repo.IStorage
+import com.matthew.statefulbread.repo.SplashNav
+import com.matthew.statefulbread.repo.model.User
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.kotlin.addTo
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class Register : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
 
+    @Inject lateinit var registerVM: RegisterVM
+
     override fun onResume() {
         super.onResume()
-        binding.backButton.setOnClickListener { navService.toLogin(R.id.splash_container) }
-        binding.registerButton.setOnClickListener { onSubmit() }
+
+        binding.backButton.clicks()
+            .flatMapCompletable { registerVM.navToLogin() }
+            .subscribe().addTo(disposable)
+
+        binding.registerButton.clicks()
+            .doOnNext { onSubmit() }
+            .subscribe().addTo(disposable)
     }
 
     private fun onSubmit() {
-        activity?.hideKeyboard(binding.root)
-        val name = binding.nameEditText.text?.trim()?.toString() ?: ""
-        val email = binding.emailEditText.text?.trim()?.toString() ?: ""
-        val zipCode = binding.zipCodeEditText.text?.trim()?.toString() ?: ""
-        val password = binding.passwordEditText.text?.trim()?.toString() ?: ""
+        hideKeyboard(binding.root)
+        val user = User.def(mapOf(
+            "age" to "0",
+            "name" to binding.nameEditText.getValue(),
+            "email" to binding.emailEditText.getValue(),
+            "zipCode" to binding.zipCodeEditText.getValue(),
+            "password" to binding.passwordEditText.getValue()
+        ))
 
-        if (name.isEmpty()) { binding.nameEditText.error = "Blank Name"; return }
-        if (email.isEmpty()) { binding.emailEditText.error = "Blank Email Address"; return }
-        if (!email.contains("@")) { binding.emailEditText.error = "Invalid Email Address"; return }
-        if (zipCode.isEmpty()) { binding.zipCodeEditText.error = "Blank Zip Code"; return }
-        if (password.isEmpty()) { binding.passwordEditText.error = "Blank Password"; return }
-        if (email == prefsService.getEmail()) { binding.emailEditText.error = "Email Address Already Exists"; return }
-
-        prefsService.setName(name)
-        prefsService.setEmail(email)
-        prefsService.setZipCode(zipCode)
-        navService.toLogin(R.id.splash_container)
+        if (user.name.isEmpty()) binding.nameEditText.error = "Blank Name"
+        else if (user.email.isEmpty()) binding.emailEditText.error = "Blank Email"
+        else if (!user.email.contains("@")) binding.emailEditText.error = "Invalid Email"
+        else if (user.zipCode.isEmpty()) binding.zipCodeEditText.error = "Blank ZipCode"
+        else if (user.password.isEmpty()) binding.passwordEditText.error = "Blank Password"
+        else registerVM
+            .onSubmit(user)
+            .doOnError { binding.emailEditText.error = "Email Already Exists" }
+            .subscribe().addTo(disposable)
     }
+
+}
+
+class RegisterVM @Inject constructor(private val storage: IStorage, @SplashNav private val nav: INav) {
+
+    fun navToLogin(): Completable = Completable.fromAction(nav::toLogin)
+
+    fun onSubmit(user: User): Completable = storage.userRepo()
+        .flatMapCompletable { it.insert(user) }
+        .andThen(navToLogin())
 
 }

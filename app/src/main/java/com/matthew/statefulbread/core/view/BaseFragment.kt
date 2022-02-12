@@ -8,17 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.matthew.statefulbread.core.TAG
-import com.matthew.statefulbread.repo.IDataService
-import com.matthew.statefulbread.repo.INavService
-import com.matthew.statefulbread.repo.IPrefsService
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import javax.inject.Inject
 
 abstract class BaseFragment<Binding: ViewBinding>(val binder: (LayoutInflater) -> Binding) : Fragment() {
 
-    @Inject lateinit var navService: INavService
-    @Inject lateinit var dataService: IDataService
-    @Inject lateinit var prefsService: IPrefsService
     val binding: Binding by lazy { binder(layoutInflater) }
     val disposable: CompositeDisposable by lazy { CompositeDisposable() }
 
@@ -34,13 +27,17 @@ abstract class BaseFragment<Binding: ViewBinding>(val binder: (LayoutInflater) -
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onStop")
-        disposable.dispose()
+        Log.d("TAG", "onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
+    }
+
+    override fun onDestroyView() {
+        disposable.clear()
+        super.onDestroyView()
     }
 
 }

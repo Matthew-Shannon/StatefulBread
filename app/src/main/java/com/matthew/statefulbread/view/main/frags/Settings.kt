@@ -1,19 +1,29 @@
 package com.matthew.statefulbread.view.main.frags
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.matthew.statefulbread.core.setNightMode
+import com.jakewharton.rxbinding4.view.clicks
+import com.matthew.statefulbread.core.TAG
 import com.matthew.statefulbread.core.view.BaseFragment
 import com.matthew.statefulbread.databinding.CellSettingsBinding
 import com.matthew.statefulbread.databinding.SettingsBinding
+import com.matthew.statefulbread.repo.*
+import com.matthew.statefulbread.repo.model.User
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.addTo
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
+
+    @Inject lateinit var settingsVM: SettingsVM
 
     private val adapter: SettingsAdapter by lazy { SettingsAdapter(layoutInflater, items) }
     private val items: MutableList<String> by lazy { mutableListOf() }
@@ -24,16 +34,17 @@ class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        dataService.getUser()
-            .subscribe(::setupRecyclerView)
-            .addTo(disposable)
+        binding.logoutButton.clicks()
+            .flatMapCompletable { settingsVM.onLogout() }
+            .subscribe().addTo(disposable)
 
-        prefsService.getDarkModeSingle()
-            .subscribe(::setupDarkmodeCheckbox)
-            .addTo(disposable)
+        settingsVM.getUser()
+            .doOnSuccess(::setupRecyclerView)
+            .subscribe().addTo(disposable)
 
-        binding.logoutButton.setOnClickListener { onLogout() }
-
+        settingsVM.getDayNightMode()
+            .doOnSuccess(::setupDarkmodeCheckbox)
+            .subscribe().addTo(disposable)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -45,18 +56,9 @@ class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
 
     private fun setupDarkmodeCheckbox(mode: Boolean) {
         binding.nightModeCheckbox.isChecked = mode
-        binding.nightModeCheckbox.setOnClickListener { onNightModeToggle() }
-    }
-
-    private fun onNightModeToggle() {
-        val mode = !prefsService.getDarkMode()
-        prefsService.setDarkMode(mode)
-        activity?.setNightMode(mode)
-    }
-
-    private fun onLogout() {
-        prefsService.clear()
-        navService.toSplash()
+        binding.nightModeCheckbox.clicks()
+            .flatMapCompletable { settingsVM.toggleDayNightMode() }
+            .subscribe().addTo(disposable)
     }
 
 }
@@ -68,4 +70,24 @@ class SettingsAdapter(private val inflater: LayoutInflater, private val items: L
     override fun getItemCount(): Int = items.size
 }
 
+class SettingsVM @Inject constructor(private val prefs: IPrefs, private val storage: IStorage, private val theme: ITheme, @MainNav private val nav: INav) {
+    fun navToSplash(): Completable = Completable.fromAction(nav::toSplash)
 
+    fun getUser(): Single<List<String>> = prefs.getOwnerID()
+        .flatMapMaybe { id -> storage.userRepo().flatMapMaybe { it.findById(id) } }
+        .map(User::toList).defaultIfEmpty(emptyList())
+        .observeOn(AndroidSchedulers.mainThread())
+
+
+    fun onLogout(): Completable = prefs.clear()
+        .andThen(storage.clear())
+        .andThen(navToSplash())
+
+    fun getDayNightMode(): Single<Boolean> = theme.getDarkMode()
+
+    fun toggleDayNightMode(): Completable {
+        Log.d(TAG, "WOW : toggleDayNightMode")
+        return theme.toggleDarkMode()
+    }
+
+}
