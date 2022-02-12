@@ -24,31 +24,25 @@ class Splash : BaseActivity<SplashBinding>(SplashBinding::inflate) {
     public override fun onResume() {
         super.onResume()
 
-        //splashVM.clearStorage().subscribe().addTo(disposable)
+        //sub(splashVM.clearStorage())
 
-        splashVM
-            .initDayNightMode()
-            .subscribe().addTo(disposable)
+        splashVM.initDayNightMode().subscribe().addTo(disposable)
 
-        binding.root.longClicks()
-            .flatMapCompletable { splashVM.toggleDayNightMode() }
-            .subscribe().addTo(disposable)
+        binding.root.longClicks().flatMapCompletable { splashVM.toggleDayNightMode() }.subscribe().addTo(disposable)
 
-        splashVM.checkAuthorization()
-            .subscribe().addTo(disposable)
+        splashVM.checkAuthorization().subscribe().addTo(disposable)
     }
 
 }
 
 class SplashVM @Inject constructor(private val prefs: IPrefs, private val storage: IStorage, private val theme: ITheme, @SplashNav private val nav: INav) {
 
-    fun navToMain(): Completable = Completable.fromAction(nav::toMain)
-
-    fun navToLogin(): Completable = Completable.fromAction(nav::toLogin)
-
     fun checkAuthorization(): Completable = prefs
         .getAuthStatus()
-        .flatMapCompletable { if (it) navToMain() else navToLogin() }
+        .flatMapCompletable {
+            if (it) Completable.defer(nav::toMain)
+            else Completable.defer(nav::toLogin)
+        }
 
     fun clearStorage(): Completable = storage.clear().andThen(prefs.clear())
 

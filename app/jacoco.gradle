@@ -1,0 +1,63 @@
+apply plugin: "com.dicedmelon.gradle.jacoco-android"
+
+jacoco { toolVersion = "$jacoco_version" }
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
+
+jacocoAndroidUnitTestReport {
+    csv.enabled false
+    html.enabled true
+    xml.enabled true
+    excludes += [
+        // data binding
+        'android/databinding/**/*.class',
+        '**/android/databinding/*Binding.class',
+        '**/android/databinding/*',
+        '**/androidx/databinding/*',
+        '**/databinding/*',
+        '**/BR.*',
+        // android
+        '**/R.class',
+        '**/R$*.class',
+        '**/BuildConfig.*',
+        '**/Manifest*.*',
+        '**/*Test*.*',
+        'android/**/*.*',
+        // dagger
+        '**/*_MembersInjector.class',
+        '**/Dagger*Component.class',
+        '**/Dagger*Component$Builder.class',
+        '**/*Module_*Factory.class',
+        '**/di/module/*',
+        '**/*_Factory*.*',
+        '**/*Module*.*',
+        '**/*Dagger*.*',
+        '**/*Hilt*.*',
+        // kotlin
+        '**/*MapperImpl*.*',
+        '**/*$ViewInjector*.*',
+        '**/*$ViewBinder*.*',
+        '**/BuildConfig.*',
+        '**/*Component*.*',
+        '**/*BR*.*',
+        '**/Manifest*.*',
+        '**/*$Lambda$*.*',
+        '**/*Companion*.*',
+        '**/*Module*.*',
+        '**/*Dagger*.*',
+        '**/*Hilt*.*',
+        '**/*MembersInjector*.*',
+        '**/*_MembersInjector.class',
+        '**/*_Factory*.*',
+        '**/*_Provide*Factory*.*',
+        '**/*Extensions*.*',
+        '**/hilt_aggregated_deps/*',
+        '**/dagger/hilt/internal/aggregatedroot/codegen/*',
+        // sealed and data classes
+        '**/*$Result.*',
+        '**/*$Result$*.*'
+    ]
+}

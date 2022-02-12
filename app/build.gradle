@@ -2,7 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: "com.dicedmelon.gradle.jacoco-android"
+apply from: 'jacoco.gradle'
+
+kapt { correctErrorTypes true }
 
 android {
     compileSdkVersion 31
@@ -15,12 +17,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-//        javaCompileOptions {
-//            annotationProcessorOptions {
-//                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
-//            }
-//        }
     }
 
     buildFeatures { viewBinding true }
@@ -41,12 +37,8 @@ android {
     }
     kotlinOptions { jvmTarget = "1.8" }
     testOptions {
-        //dexecution "ANDROID_TEST_ORCHESTRATOR"
         animationsDisabled true
-
-        unitTests {
-            includeAndroidResources = true
-        }
+        unitTests { includeAndroidResources = true }
     }
 
 }
@@ -78,8 +70,7 @@ dependencies {
     testImplementation "androidx.room:room-testing:$room_version"
 
     // RX Dogtag
-    implementation("com.uber.rxdogtag2:rxdogtag:2.0.1")
-
+    implementation "com.uber.rxdogtag2:rxdogtag:$rxdogtag_version"
 
     // Rx Bindings
     implementation "com.jakewharton.rxbinding4:rxbinding:$rxbinding_version"
@@ -111,72 +102,4 @@ dependencies {
     testImplementation "androidx.test.espresso:espresso-core:$expresso_version"
     testImplementation "io.mockk:mockk:$mockk_version"
     testImplementation "io.mockk:mockk-agent-jvm:$mockk_version"
-
-
-}
-
-kapt { correctErrorTypes true }
-
-jacoco { toolVersion = "$jacoco_version" }
-
-hilt { enableTransformForLocalTests = true }
-
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
-    jacoco.excludes = ['jdk.internal.*']
-}
-
-jacocoAndroidUnitTestReport {
-    csv.enabled false
-    html.enabled true
-    xml.enabled true
-    excludes += [
-        // data binding
-        'android/databinding/**/*.class',
-        '**/android/databinding/*Binding.class',
-        '**/android/databinding/*',
-        '**/androidx/databinding/*',
-        '**/databinding/*',
-        '**/BR.*',
-        // android
-        '**/R.class',
-        '**/R$*.class',
-        '**/BuildConfig.*',
-        '**/Manifest*.*',
-        '**/*Test*.*',
-        'android/**/*.*',
-        // dagger
-        '**/*_MembersInjector.class',
-        '**/Dagger*Component.class',
-        '**/Dagger*Component$Builder.class',
-        '**/*Module_*Factory.class',
-        '**/di/module/*',
-        '**/*_Factory*.*',
-        '**/*Module*.*',
-        '**/*Dagger*.*',
-        '**/*Hilt*.*',
-        // kotlin
-        '**/*MapperImpl*.*',
-        '**/*$ViewInjector*.*',
-        '**/*$ViewBinder*.*',
-        '**/BuildConfig.*',
-        '**/*Component*.*',
-        '**/*BR*.*',
-        '**/Manifest*.*',
-        '**/*$Lambda$*.*',
-        '**/*Companion*.*',
-        '**/*Module*.*',
-        '**/*Dagger*.*',
-        '**/*Hilt*.*',
-        '**/*MembersInjector*.*',
-        '**/*_MembersInjector.class',
-        '**/*_Factory*.*',
-        '**/*_Provide*Factory*.*',
-        '**/*Extensions*.*',
-        '**/hilt_aggregated_deps/*',
-        '**/dagger/hilt/internal/aggregatedroot/codegen/*',
-        // sealed and data classes
-        '**/*$Result.*',
-        '**/*$Result$*.*'
-    ]
 }

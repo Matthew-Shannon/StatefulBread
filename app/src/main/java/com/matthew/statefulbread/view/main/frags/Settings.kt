@@ -1,13 +1,11 @@
 package com.matthew.statefulbread.view.main.frags
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding4.view.clicks
-import com.matthew.statefulbread.core.TAG
 import com.matthew.statefulbread.core.view.BaseFragment
 import com.matthew.statefulbread.databinding.CellSettingsBinding
 import com.matthew.statefulbread.databinding.SettingsBinding
@@ -17,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.kotlin.addTo
 import javax.inject.Inject
 
@@ -40,6 +39,7 @@ class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
 
         settingsVM.getUser()
             .doOnSuccess(::setupRecyclerView)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe().addTo(disposable)
 
         settingsVM.getDayNightMode()
@@ -71,23 +71,19 @@ class SettingsAdapter(private val inflater: LayoutInflater, private val items: L
 }
 
 class SettingsVM @Inject constructor(private val prefs: IPrefs, private val storage: IStorage, private val theme: ITheme, @MainNav private val nav: INav) {
-    fun navToSplash(): Completable = Completable.fromAction(nav::toSplash)
 
     fun getUser(): Single<List<String>> = prefs.getOwnerID()
         .flatMapMaybe { id -> storage.userRepo().flatMapMaybe { it.findById(id) } }
         .map(User::toList).defaultIfEmpty(emptyList())
-        .observeOn(AndroidSchedulers.mainThread())
 
-
-    fun onLogout(): Completable = prefs.clear()
-        .andThen(storage.clear())
-        .andThen(navToSplash())
+    fun onLogout(): Completable = Completable.mergeArray(
+        Completable.defer(storage::clear),
+        Completable.defer(prefs::clear),
+        Completable.defer(nav::toSplash)
+    )
 
     fun getDayNightMode(): Single<Boolean> = theme.getDarkMode()
 
-    fun toggleDayNightMode(): Completable {
-        Log.d(TAG, "WOW : toggleDayNightMode")
-        return theme.toggleDarkMode()
-    }
+    fun toggleDayNightMode(): Completable = theme.toggleDarkMode()
 
 }

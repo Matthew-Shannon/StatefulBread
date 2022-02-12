@@ -3,6 +3,7 @@ buildscript {
     ext.jacoco_version = "0.8.7"
     ext.rxjava_version = "3.0.0"
     ext.rxbinding_version = "4.0.0"
+    ext.rxdogtag_version = "2.0.1"
     ext.dagger_version = "2.40.5"
     ext.mockk_version = "1.12.2"
     ext.expresso_version = "3.4.0"

@@ -9,10 +9,8 @@ import com.matthew.statefulbread.repo.INav
 import com.matthew.statefulbread.repo.IPrefs
 import com.matthew.statefulbread.repo.IStorage
 import com.matthew.statefulbread.repo.SplashNav
-import com.matthew.statefulbread.repo.model.User
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.addTo
 import javax.inject.Inject
 
@@ -51,17 +49,18 @@ class Login : BaseFragment<LoginBinding>(LoginBinding::inflate) {
 
 class LoginVM @Inject constructor(private val prefs: IPrefs, private val storage: IStorage, @SplashNav private val nav: INav) {
 
-    fun navToRegister(): Completable = Completable.fromAction(nav::toRegister)
-
-    fun navToMain(): Completable = Completable.fromAction(nav::toMain)
+    fun navToRegister(): Completable = Completable.defer(nav::toRegister)
 
     fun onSubmit(email: String, password: String): Completable {
         return storage.userRepo()
-            .flatMap { it.findByCredentials(email, password).defaultIfEmpty(User.empty()) }
-            .flatMap { if(it != User.empty()) Single.just(it) else Single.error(Exception()) }
-            .flatMapCompletable { prefs.setOwnerID(it.id) }
-            .andThen(prefs.setAuthStatus(true))
-            .andThen(navToMain())
+            .flatMapMaybe { it.findByCredentials(email, password) }
+            .flatMapCompletable {
+                Completable.mergeArray(
+                    Completable.defer { prefs.setOwnerID(it.id) },
+                    Completable.defer { prefs.setAuthStatus(true) },
+                    Completable.defer(nav::toMain)
+                )
+            }
     }
 
 }

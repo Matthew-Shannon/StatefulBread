@@ -56,10 +56,14 @@ class Register : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
 
 class RegisterVM @Inject constructor(private val storage: IStorage, @SplashNav private val nav: INav) {
 
-    fun navToLogin(): Completable = Completable.fromAction(nav::toLogin)
+    fun navToLogin(): Completable = Completable.defer(nav::toLogin)
 
     fun onSubmit(user: User): Completable = storage.userRepo()
-        .flatMapCompletable { it.insert(user) }
-        .andThen(navToLogin())
+        .flatMapCompletable {
+            Completable.mergeArray(
+                Completable.defer { it.insert(user) },
+                Completable.defer(nav::toLogin)
+            )
+        }
 
 }

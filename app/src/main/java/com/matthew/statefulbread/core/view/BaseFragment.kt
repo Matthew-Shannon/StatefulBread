@@ -8,7 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.matthew.statefulbread.core.TAG
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
 
 abstract class BaseFragment<Binding: ViewBinding>(val binder: (LayoutInflater) -> Binding) : Fragment() {
 
@@ -40,4 +44,7 @@ abstract class BaseFragment<Binding: ViewBinding>(val binder: (LayoutInflater) -
         super.onDestroyView()
     }
 
+    fun <T: Any> sub(req: Observable<T>) = req.subscribe().addTo(disposable)
+    fun <T: Any> sub(req: Single<T>) = req.subscribe().addTo(disposable)
+    fun sub(req: Completable) = req.subscribe().addTo(disposable)
 }
