@@ -6,12 +6,11 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
 
 interface IPrefs {
 
-    fun getOwnerID(): Single<Int>
-    fun setOwnerID(value: Int): Completable
+    fun getOwnerEmail(): Single<String>
+    fun setOwnerEmail(value: String): Completable
 
     fun getDarkMode(): Single<Boolean>
     fun setDarkMode(value: Boolean): Completable
@@ -28,8 +27,8 @@ interface IPrefs {
 
 class Prefs(private val sharedPreferences: SharedPreferences) : IPrefs {
 
-    override fun getOwnerID(): Single<Int> = get { it.getInt("ownerId", 0) }
-    override fun setOwnerID(value: Int): Completable = edit { it.putInt("ownerId", value) }
+    override fun getOwnerEmail(): Single<String> = get { it.getString("ownerEmail", "") ?: "" }
+    override fun setOwnerEmail(value: String): Completable = edit { it.putString("ownerEmail", value) }
 
     override fun getDarkMode(): Single<Boolean> = get { it.getBoolean("darkMode", false) }
     override fun setDarkMode(value: Boolean) = edit { it.putBoolean("darkMode", value) }
@@ -51,11 +50,12 @@ class Prefs(private val sharedPreferences: SharedPreferences) : IPrefs {
 
     private fun edit(f: (Editor) -> Editor): Completable = prefs()
         .map(SharedPreferences::edit)
-        .map(f).flatMapCompletable { Completable.fromAction(it::apply) }
+        .map(f)
+        .flatMapCompletable { Completable.fromAction(it::apply) }
 
     private fun prefs(): Single<SharedPreferences> = Single
         .just(sharedPreferences)
-        .observeOn(Schedulers.io())
+        //.observeOn(Schedulers.io())
 
     companion object {
         fun def(context: Context, name: String): IPrefs = Prefs(context.getSharedPreferences(name, MODE_PRIVATE))

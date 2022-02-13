@@ -1,8 +1,8 @@
 package com.matthew.statefulbread.view.main
 
 import com.matthew.statefulbread.core.BaseTest
+import com.matthew.statefulbread.core.view.INav
 import com.matthew.statefulbread.repo.ITheme
-import com.matthew.statefulbread.repo.INav
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
@@ -24,11 +24,20 @@ class MainVMTest: BaseTest() {
     }
 
     @Test fun on_frag_selected_should_correctly_match_titles_to_frags() {
+        every { nav.toHome() } returns Completable.complete()
+        every { nav.toSearch() } returns Completable.complete()
+        every { nav.toCategories() } returns Completable.complete()
+        every { nav.toFavorites() } returns Completable.complete()
+        every { nav.toSettings() } returns Completable.complete()
+
         mainVM.onFragSelected("Home").test().dispose()
             .run { verify(exactly = 1) { nav.toHome() } }
 
         mainVM.onFragSelected("Search").test().dispose()
             .run { verify(exactly = 1) { nav.toSearch() } }
+
+        mainVM.onFragSelected("Categories").test().dispose()
+            .run { verify(exactly = 1) { nav.toCategories() } }
 
         mainVM.onFragSelected("Favorites").test().dispose()
             .run { verify(exactly = 1) { nav.toFavorites() } }
@@ -41,6 +50,7 @@ class MainVMTest: BaseTest() {
         mainVM.onFragSelected("").test().dispose()
             .run { verify(exactly = 0) { nav.toHome() } }
             .run { verify(exactly = 0) { nav.toSearch() } }
+            .run { verify(exactly = 0) { nav.toCategories() } }
             .run { verify(exactly = 0) { nav.toFavorites() } }
             .run { verify(exactly = 0) { nav.toSettings() } }
     }
@@ -48,17 +58,15 @@ class MainVMTest: BaseTest() {
     @Test fun on_title_change_should_call_nav_get_current_title() {
         every { nav.getCurrentTitle() } returns Observable.just("ASDF")
 
-        mainVM.onTitleChange().test().assertValue("ASDF").dispose().run {
-            verify(exactly = 1) { nav.getCurrentTitle() }
-        }
+        mainVM.onTitleChange().test().assertValue("ASDF").dispose()
+            .run { verify(exactly = 1) { nav.getCurrentTitle() } }
     }
 
     @Test fun on_toggle_daynight_mode_call_theme_toggle_daynight_mode() {
         every { theme.toggleDarkMode() } returns Completable.complete()
 
-        mainVM.toggleDayNightMode().test().dispose().run {
-            verify(exactly = 1) { theme.toggleDarkMode() }
-        }
+        mainVM.toggleDayNightMode().test().dispose()
+            .run { verify(exactly = 1) { theme.toggleDarkMode() } }
     }
 
 }

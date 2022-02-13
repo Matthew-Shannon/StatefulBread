@@ -1,11 +1,13 @@
 package com.matthew.statefulbread.view.auth
 
-import android.os.Bundle
-import androidx.core.view.WindowCompat
 import com.jakewharton.rxbinding4.view.longClicks
 import com.matthew.statefulbread.core.view.BaseActivity
+import com.matthew.statefulbread.core.view.INav
+import com.matthew.statefulbread.core.view.SplashNav
 import com.matthew.statefulbread.databinding.SplashBinding
-import com.matthew.statefulbread.repo.*
+import com.matthew.statefulbread.repo.IPrefs
+import com.matthew.statefulbread.repo.IStorage
+import com.matthew.statefulbread.repo.ITheme
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.kotlin.addTo
@@ -16,32 +18,31 @@ class Splash : BaseActivity<SplashBinding>(SplashBinding::inflate) {
 
     @Inject lateinit var splashVM: SplashVM
 
-    override fun onCreate(bundle: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        super.onCreate(bundle)
-    }
-
     public override fun onResume() {
         super.onResume()
 
-        //sub(splashVM.clearStorage())
+        splashVM.initDayNightMode()
+            .subscribe().addTo(disposable)
 
-        splashVM.initDayNightMode().subscribe().addTo(disposable)
+        binding.root.longClicks()
+            .flatMapCompletable { splashVM.toggleDayNightMode() }
+            .subscribe().addTo(disposable)
 
-        binding.root.longClicks().flatMapCompletable { splashVM.toggleDayNightMode() }.subscribe().addTo(disposable)
-
-        splashVM.checkAuthorization().subscribe().addTo(disposable)
+        Completable.complete()
+            //.andThen(splashVM.clearStorage())
+            .andThen(splashVM.checkAuthorization())
+            .subscribe().addTo(disposable)
     }
 
 }
 
 class SplashVM @Inject constructor(private val prefs: IPrefs, private val storage: IStorage, private val theme: ITheme, @SplashNav private val nav: INav) {
 
-    fun checkAuthorization(): Completable = prefs
-        .getAuthStatus()
+    fun checkAuthorization(): Completable = prefs.getAuthStatus()
         .flatMapCompletable {
             if (it) Completable.defer(nav::toMain)
             else Completable.defer(nav::toLogin)
+//            Completable.defer(nav::toLogin)
         }
 
     fun clearStorage(): Completable = storage.clear().andThen(prefs.clear())

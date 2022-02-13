@@ -10,6 +10,12 @@
         android:enabled="true"
         android:icon="@drawable/ic_baseline_search_24"
         android:title="@string/search"/>
+
+    <item
+        android:id="@+id/menu_categories"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_widgets_24"
+        android:title="@string/categories"/>
     <item
         android:id="@+id/menu_favorites"
         android:enabled="true"

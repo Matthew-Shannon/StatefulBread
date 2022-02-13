@@ -2,10 +2,10 @@ package com.matthew.statefulbread.core.di
 
 import android.app.Activity
 import com.matthew.statefulbread.R
-import com.matthew.statefulbread.repo.INav
-import com.matthew.statefulbread.repo.MainNav
-import com.matthew.statefulbread.repo.Nav
-import com.matthew.statefulbread.repo.SplashNav
+import com.matthew.statefulbread.core.view.INav
+import com.matthew.statefulbread.core.view.MainNav
+import com.matthew.statefulbread.core.view.Nav
+import com.matthew.statefulbread.core.view.SplashNav
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

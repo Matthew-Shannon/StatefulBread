@@ -2,16 +2,19 @@ package com.matthew.statefulbread.view.auth.frags
 
 import com.jakewharton.rxbinding4.view.clicks
 import com.matthew.statefulbread.core.getValue
-import com.matthew.statefulbread.core.hideKeyboard
 import com.matthew.statefulbread.core.view.BaseFragment
+import com.matthew.statefulbread.core.view.INav
+import com.matthew.statefulbread.core.view.SplashNav
 import com.matthew.statefulbread.databinding.LoginBinding
-import com.matthew.statefulbread.repo.INav
 import com.matthew.statefulbread.repo.IPrefs
 import com.matthew.statefulbread.repo.IStorage
-import com.matthew.statefulbread.repo.SplashNav
+import com.matthew.statefulbread.repo.model.User
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -27,23 +30,26 @@ class Login : BaseFragment<LoginBinding>(LoginBinding::inflate) {
             .subscribe().addTo(disposable)
 
         binding.loginButton.clicks()
-            .doOnNext { onSubmit() }
+            .doOnNext { onSubmit(getData()) }
             .subscribe().addTo(disposable)
     }
 
-    private fun onSubmit() {
-        hideKeyboard(binding.root)
-        val email = binding.emailEditText.getValue()
-        val password = binding.passwordEditText.getValue()
+    private fun onSubmit(data: Map<String,String>) = loginVM
+        .onAttempt(data)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribeBy(this::onError)
+        .addTo(disposable)
 
-        if (email.isEmpty()) binding.emailEditText.error = "Blank Email"
-        else if (!email.contains("@")) binding.emailEditText.error = "Invalid Email"
-        else if (password.isEmpty()) binding.passwordEditText.error = "Blank Password"
-        else loginVM
-            .onSubmit(email, password)
-            .doOnError { binding.emailEditText.error = "Incorrect Credentials" }
-                .subscribe().addTo(disposable)
+    private fun onError(ex: Throwable) = when (ex) {
+        is EmailBlankEx, is EmailInvalidEx, is EmailExistsEx -> binding.emailEditText.error = ex.message
+        is PasswordBlankEx, is IncorrectCredentialsEx -> binding.passwordEditText.error = ex.message
+        else -> {}
     }
+
+    private fun getData(): Map<String,String>  = mapOf(
+        "email" to binding.emailEditText.getValue(),
+        "password" to binding.passwordEditText.getValue()
+    )
 
 }
 
@@ -51,16 +57,30 @@ class LoginVM @Inject constructor(private val prefs: IPrefs, private val storage
 
     fun navToRegister(): Completable = Completable.defer(nav::toRegister)
 
-    fun onSubmit(email: String, password: String): Completable {
-        return storage.userRepo()
-            .flatMapMaybe { it.findByCredentials(email, password) }
+    fun onAttempt(req: Map<String,String>): Completable = Single
+        .just(User.def(req))
+        .flatMap(::onValidate)
+        .flatMapCompletable(::onSubmit)
+
+    fun onValidate(user: User): Single<User> = when {
+        user.email.isEmpty() -> Single.error(EmailBlankEx())
+        !user.email.contains("@") -> Single.error(EmailInvalidEx())
+        user.password.isEmpty() -> Single.error(PasswordBlankEx())
+        else -> Single.just(user)
+    }
+
+    fun onSubmit(user: User): Completable = storage.userRepo()
+        .flatMapCompletable { userRepo -> userRepo
+            .findByCredentials(user.email, user.password)
+            .filter { it != User.empty() }.isEmpty
+            .flatMap { if (it) Single.error(IncorrectCredentialsEx()) else Single.just(it) }
             .flatMapCompletable {
                 Completable.mergeArray(
-                    Completable.defer { prefs.setOwnerID(it.id) },
+                    Completable.defer { prefs.setOwnerEmail(user.email) },
                     Completable.defer { prefs.setAuthStatus(true) },
                     Completable.defer(nav::toMain)
                 )
             }
-    }
+        }
 
 }

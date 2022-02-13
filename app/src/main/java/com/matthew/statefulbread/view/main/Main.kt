@@ -5,10 +5,10 @@ import com.jakewharton.rxbinding4.material.itemSelections
 import com.jakewharton.rxbinding4.view.longClicks
 import com.matthew.statefulbread.R
 import com.matthew.statefulbread.core.view.BaseActivity
+import com.matthew.statefulbread.core.view.INav
+import com.matthew.statefulbread.core.view.MainNav
 import com.matthew.statefulbread.databinding.MainBinding
 import com.matthew.statefulbread.repo.ITheme
-import com.matthew.statefulbread.repo.INav
-import com.matthew.statefulbread.repo.MainNav
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
@@ -43,14 +43,14 @@ class Main : BaseActivity<MainBinding>(MainBinding::inflate) {
 
 class MainVM @Inject constructor(private val theme: ITheme, @MainNav private val nav: INav) {
 
-    fun onFragSelected(title: CharSequence): Completable = Completable
-        .fromAction {  when(title) {
-            "Home" -> nav.toHome()
-            "Search" -> nav.toSearch()
-            "Favorites" -> nav.toFavorites()
-            "Settings" -> nav.toSettings()
-            else -> {}
-        }}
+    fun onFragSelected(title: CharSequence): Completable = when(title) {
+        "Home" -> nav.toHome()
+        "Search" -> nav.toSearch()
+        "Categories" -> nav.toCategories()
+        "Favorites" -> nav.toFavorites()
+        "Settings" -> nav.toSettings()
+        else -> Completable.complete()
+    }
 
     fun onTitleChange(): Observable<String> = nav.getCurrentTitle()
 

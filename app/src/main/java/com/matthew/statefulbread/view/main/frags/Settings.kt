@@ -7,15 +7,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding4.view.clicks
 import com.matthew.statefulbread.core.view.BaseFragment
+import com.matthew.statefulbread.core.view.INav
+import com.matthew.statefulbread.core.view.MainNav
 import com.matthew.statefulbread.databinding.CellSettingsBinding
 import com.matthew.statefulbread.databinding.SettingsBinding
-import com.matthew.statefulbread.repo.*
+import com.matthew.statefulbread.repo.IPrefs
+import com.matthew.statefulbread.repo.IStorage
+import com.matthew.statefulbread.repo.ITheme
 import com.matthew.statefulbread.repo.model.User
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.kotlin.addTo
 import javax.inject.Inject
 
@@ -72,9 +75,9 @@ class SettingsAdapter(private val inflater: LayoutInflater, private val items: L
 
 class SettingsVM @Inject constructor(private val prefs: IPrefs, private val storage: IStorage, private val theme: ITheme, @MainNav private val nav: INav) {
 
-    fun getUser(): Single<List<String>> = prefs.getOwnerID()
-        .flatMapMaybe { id -> storage.userRepo().flatMapMaybe { it.findById(id) } }
-        .map(User::toList).defaultIfEmpty(emptyList())
+    fun getUser(): Single<List<String>> = prefs.getOwnerEmail()
+        .flatMapMaybe { id -> storage.userRepo().flatMapMaybe { it.findByEmail(id) } }
+        .map(User::toList).defaultIfEmpty(listOf())
 
     fun onLogout(): Completable = Completable.mergeArray(
         Completable.defer(storage::clear),

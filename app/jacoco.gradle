@@ -45,7 +45,7 @@ jacocoAndroidUnitTestReport {
         '**/*BR*.*',
         '**/Manifest*.*',
         '**/*$Lambda$*.*',
-        '**/*Companion*.*',
+//        '**/*Companion*.*',
         '**/*Module*.*',
         '**/*Dagger*.*',
         '**/*Hilt*.*',
@@ -53,7 +53,7 @@ jacocoAndroidUnitTestReport {
         '**/*_MembersInjector.class',
         '**/*_Factory*.*',
         '**/*_Provide*Factory*.*',
-        '**/*Extensions*.*',
+//        '**/*Extensions*.*',
         '**/hilt_aggregated_deps/*',
         '**/dagger/hilt/internal/aggregatedroot/codegen/*',
         // sealed and data classes

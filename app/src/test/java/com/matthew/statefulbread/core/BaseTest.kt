@@ -5,8 +5,7 @@ import org.junit.Before
 
 open class BaseTest {
 
-    @Before
-    open fun setUp() {
+    @Before open fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
     }
 

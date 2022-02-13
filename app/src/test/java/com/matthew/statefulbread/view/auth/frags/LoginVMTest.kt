@@ -1,7 +1,9 @@
 package com.matthew.statefulbread.view.auth.frags
 
 import com.matthew.statefulbread.core.BaseTest
-import com.matthew.statefulbread.repo.*
+import com.matthew.statefulbread.core.view.INav
+import com.matthew.statefulbread.repo.IPrefs
+import com.matthew.statefulbread.repo.IStorage
 import com.matthew.statefulbread.repo.model.User
 import com.matthew.statefulbread.repo.model.UserDao
 import io.mockk.every
@@ -27,37 +29,86 @@ class LoginVMTest: BaseTest() {
         loginVM = LoginVM(prefs, storage, nav)
     }
 
-    @Test fun on_nav_to_register_called_should_call_nav_to_register() {
-        loginVM.navToRegister().test().dispose().run {
-            verify(exactly = 1) { nav.toRegister() }
-        }
+    @Test fun on_nav_to_register() {
+        loginVM.navToRegister().test().dispose()
+            .run { verify(exactly = 1) { nav.toRegister() } }
     }
 
-    @Test fun on_submit_called_should_throw_exception_with_empty_user() {
-        every { storage.userRepo() } returns Single.just(mockk<UserDao>().also {
-            every { it.findByCredentials(any(), any()) } returns Maybe.error(Exception())
-        })
+    @Test fun on_validate() {
+        val user: User = mockk()
 
-        loginVM.onSubmit("asdf", "qwer").test().assertError(Exception::class.java).dispose().run {
-            verify(exactly = 0) { nav.toMain() }
-        }
+        every { user.email } returns ""
+        loginVM.onValidate(user).test()
+            .assertError(EmailBlankEx::class.java).dispose()
+
+        every { user.email } returns "b"
+        loginVM.onValidate(user).test()
+            .assertError(EmailInvalidEx::class.java).dispose()
+
+        every { user.email } returns "b@"
+        every { user.password } returns ""
+        loginVM.onValidate(user).test()
+            .assertError(PasswordBlankEx::class.java).dispose()
+
+        every { user.password } returns "c"
+        loginVM.onValidate(user).test()
+            .assertValue(user).dispose()
     }
 
-    @Test fun on_submit_called_should_succeed_with_non_empty_user() {
-        val userRepo: UserDao = mockk<UserDao>().also {
-            every { it.findByCredentials(any(), any()) } returns Maybe.just(mockk<User>().also {
-                every { it.id } returns 1
-            })
-        }
-        every { prefs.setOwnerID(any()) } returns Completable.complete()
+    @Test fun on_submit() {
+        var user: User = mockk()
+        val userRepo: UserDao = mockk<UserDao>()
+            .also { every { storage.userRepo() } returns Single.just(it) }
+
+        loginVM.onSubmit(user).test()
+            .assertError(Exception::class.java).dispose()
+            .run { verify(exactly = 0) { nav.toMain() } }
+
+        every { userRepo.findByCredentials(any(), any()) } returns Maybe.error(Exception())
+        loginVM.onSubmit(user).test()
+            .assertError(Exception::class.java).dispose()
+            .run { verify(exactly = 0) { nav.toMain() } }
+
+        user = User.empty()
+        every { userRepo.findByCredentials(any(), any()) } returns Maybe.just(user)
+        loginVM.onSubmit(user).test()
+            .assertError(IncorrectCredentialsEx::class.java).dispose()
+            .run { verify(exactly = 0) { nav.toMain() } }
+
+        user = User(1, 2, "a", "b", "c", "d")
+        every { userRepo.findByCredentials(any(), any()) } returns Maybe.just(user)
+        every { prefs.setOwnerEmail(any()) } returns Completable.complete()
         every { prefs.setAuthStatus(any()) } returns Completable.complete()
-        every { storage.userRepo() } returns Single.just(userRepo)
         every { nav.toMain() } returns Completable.complete()
 
-        loginVM.onSubmit("asdf", "qwer").test().assertNoErrors().dispose().run {
-            verify(exactly = 1) { nav.toMain() }
-        }
+        loginVM.onSubmit(user).test()
+            .assertNoErrors().dispose()
+            .run { verify(exactly = 1) { nav.toMain() } }
+    }
 
+    @Test fun on_attempt() {
+        val userRepo: UserDao = mockk<UserDao>()
+            .also { every { storage.userRepo() } returns Single.just(it) }
+
+        var data = mapOf<String,String>()
+        loginVM.onAttempt(data).test()
+            .assertError(EmailBlankEx::class.java).dispose()
+            .run { verify(exactly = 0) { nav.toMain() } }
+
+        every { userRepo.findByCredentials(any(), any()) } returns Maybe.just(User.empty())
+        data = mapOf("email" to "b@", "password" to "d")
+        loginVM.onAttempt(data).test()
+            .assertError(IncorrectCredentialsEx::class.java).dispose()
+            .run { verify(exactly = 0) { nav.toMain() } }
+
+        every { prefs.setOwnerEmail(any()) } returns Completable.complete()
+        every { prefs.setAuthStatus(any()) } returns Completable.complete()
+        every { nav.toMain() } returns Completable.complete()
+        every { userRepo.findByCredentials(any(), any()) } returns Maybe.just(User(1, 2, "a", "b", "c", "d"))
+        data = mapOf("id" to "1", "age" to "2", "name" to "a", "email" to "b@", "zipCode" to "c", "password" to "d")
+        loginVM.onAttempt(data).test()
+            .assertNoErrors().dispose()
+            .run { verify(exactly = 1) { nav.toMain() } }
     }
 
 }

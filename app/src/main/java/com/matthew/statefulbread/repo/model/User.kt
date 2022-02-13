@@ -53,8 +53,8 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAll(): Single<List<User>>
 
-    @Query("SELECT * FROM user WHERE id LIKE :id LIMIT 1")
-    fun findById(id: Int): Maybe<User>
+    @Query("SELECT * FROM user WHERE email LIKE :email LIMIT 1")
+    fun findByEmail(email: String): Maybe<User>
 
     @Query("SELECT * FROM user WHERE email LIKE :email AND password LIKE :password LIMIT 1")
     fun findByCredentials(email: String, password: String): Maybe<User>

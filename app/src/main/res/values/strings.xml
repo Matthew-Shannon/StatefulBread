@@ -18,4 +18,5 @@
     <string name="logout">LogOut</string>
     <string name="day_night">Day/Night</string>
     <string name="night_mode">Night Mode</string>
+    <string name="categories">Categories</string>
 </resources>
