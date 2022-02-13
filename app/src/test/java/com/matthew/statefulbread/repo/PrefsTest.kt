@@ -1,6 +1,5 @@
 package com.matthew.statefulbread.repo
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.matthew.statefulbread.core.BaseTest
 import io.mockk.every
@@ -13,17 +12,13 @@ import org.junit.Test
 class PrefsTest: BaseTest() {
 
     @MockK lateinit var sharedPreferences: SharedPreferences
-
     private lateinit var prefs: Prefs
 
     @Before
     override fun setUp() {
         super.setUp()
-        val context: Context = mockk<Context>()
-            .also { every { it.getSharedPreferences(any(), any()) } returns sharedPreferences }
-        prefs = Prefs.def(context, "asdf") as Prefs
+        prefs = Prefs(sharedPreferences)
     }
-
 
     @Test fun on_set_age() {
         val editor: SharedPreferences.Editor = mockk()
@@ -43,7 +38,7 @@ class PrefsTest: BaseTest() {
             .also { verify(exactly = 1) { sharedPreferences.getInt(any(), any()) } }
     }
 
-    @Test fun on_set_owner_id() {
+    @Test fun on_set_owner_email() {
         val editor: SharedPreferences.Editor = mockk()
         every { sharedPreferences.edit() } returns editor
         every { editor.putString(any(), any()) } returns editor
@@ -53,7 +48,7 @@ class PrefsTest: BaseTest() {
             .also { verify(exactly = 1) { editor.putString(any(), any()) } }
     }
 
-    @Test fun on_get_owner_id() {
+    @Test fun on_get_owner_email() {
         every { sharedPreferences.getString(any(), any()) } returns "asdf"
 
         prefs.getOwnerEmail().test().dispose()
@@ -83,14 +78,14 @@ class PrefsTest: BaseTest() {
         every { editor.putBoolean(any(), any()) } returns editor
         every { editor.apply() } returns Unit
 
-        prefs.setDarkMode(true).test().dispose()
+        prefs.setDayNightMode(true).test().dispose()
             .also { verify(exactly = 1) { editor.putBoolean(any(), any()) } }
     }
 
     @Test fun on_get_dark_mode() {
         every { sharedPreferences.getBoolean(any(), any()) } returns true
 
-        prefs.getDarkMode().test().dispose()
+        prefs.getDayNightMode().test().dispose()
             .also { verify(exactly = 1) { sharedPreferences.getBoolean(any(), any()) } }
     }
 

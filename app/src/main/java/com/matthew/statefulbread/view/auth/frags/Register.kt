@@ -1,7 +1,6 @@
 package com.matthew.statefulbread.view.auth.frags
 
 import com.jakewharton.rxbinding4.view.clicks
-import com.matthew.statefulbread.core.getValue
 import com.matthew.statefulbread.core.view.BaseFragment
 import com.matthew.statefulbread.core.view.INav
 import com.matthew.statefulbread.core.view.SplashNav
@@ -49,10 +48,10 @@ class Register : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
 
     private fun getData(): Map<String,String>  = mapOf(
         "age" to "0",
-        "name" to binding.nameEditText.getValue(),
-        "email" to binding.emailEditText.getValue(),
-        "zipCode" to binding.zipCodeEditText.getValue(),
-        "password" to binding.passwordEditText.getValue()
+        "name" to binding.nameEditText.text?.trim()?.toString().orEmpty(),
+        "email" to binding.emailEditText.text?.trim()?.toString().orEmpty(),
+        "zipCode" to binding.zipCodeEditText.text?.trim()?.toString().orEmpty(),
+        "password" to binding.passwordEditText.text?.trim()?.toString().orEmpty()
     )
 
 }

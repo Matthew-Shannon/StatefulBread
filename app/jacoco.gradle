@@ -26,6 +26,7 @@ jacocoAndroidUnitTestReport {
         '**/Manifest*.*',
         '**/*Test*.*',
         'android/**/*.*',
+        '**/*Activity*.*',
         // dagger
         '**/*_MembersInjector.class',
         '**/Dagger*Component.class',
@@ -58,6 +59,7 @@ jacocoAndroidUnitTestReport {
         '**/dagger/hilt/internal/aggregatedroot/codegen/*',
         // sealed and data classes
         '**/*$Result.*',
-        '**/*$Result$*.*'
+        '**/*$Result$*.*',
+        '**/*_Impl*.*'
     ]
 }

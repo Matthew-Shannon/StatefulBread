@@ -54,6 +54,6 @@ class MainVM @Inject constructor(private val theme: ITheme, @MainNav private val
 
     fun onTitleChange(): Observable<String> = nav.getCurrentTitle()
 
-    fun toggleDayNightMode(): Completable = theme.toggleDarkMode()
+    fun toggleDayNightMode(): Completable = theme.toggleDayNightMode()
 
 }

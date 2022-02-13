@@ -104,8 +104,9 @@ class LoginVMTest: BaseTest() {
         every { prefs.setOwnerEmail(any()) } returns Completable.complete()
         every { prefs.setAuthStatus(any()) } returns Completable.complete()
         every { nav.toMain() } returns Completable.complete()
-        every { userRepo.findByCredentials(any(), any()) } returns Maybe.just(User(1, 2, "a", "b", "c", "d"))
-        data = mapOf("id" to "1", "age" to "2", "name" to "a", "email" to "b@", "zipCode" to "c", "password" to "d")
+        val user = User(1, 2, "a", "b@", "c", "d")
+        every { userRepo.findByCredentials(any(), any()) } returns Maybe.just(user)
+        data = User.explode(user)
         loginVM.onAttempt(data).test()
             .assertNoErrors().dispose()
             .run { verify(exactly = 1) { nav.toMain() } }

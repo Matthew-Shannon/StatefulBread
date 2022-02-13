@@ -1,7 +1,5 @@
 package com.matthew.statefulbread.repo
 
-import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import io.reactivex.rxjava3.core.Completable
@@ -12,8 +10,8 @@ interface IPrefs {
     fun getOwnerEmail(): Single<String>
     fun setOwnerEmail(value: String): Completable
 
-    fun getDarkMode(): Single<Boolean>
-    fun setDarkMode(value: Boolean): Completable
+    fun getDayNightMode(): Single<Boolean>
+    fun setDayNightMode(value: Boolean): Completable
 
     fun getAuthStatus(): Single<Boolean>
     fun setAuthStatus(value: Boolean): Completable
@@ -27,11 +25,11 @@ interface IPrefs {
 
 class Prefs(private val sharedPreferences: SharedPreferences) : IPrefs {
 
-    override fun getOwnerEmail(): Single<String> = get { it.getString("ownerEmail", "") ?: "" }
+    override fun getOwnerEmail(): Single<String> = get { it.getString("ownerEmail", "")!! }
     override fun setOwnerEmail(value: String): Completable = edit { it.putString("ownerEmail", value) }
 
-    override fun getDarkMode(): Single<Boolean> = get { it.getBoolean("darkMode", false) }
-    override fun setDarkMode(value: Boolean) = edit { it.putBoolean("darkMode", value) }
+    override fun getDayNightMode(): Single<Boolean> = get { it.getBoolean("dayNightMode", false) }
+    override fun setDayNightMode(value: Boolean) = edit { it.putBoolean("dayNightMode", value) }
 
     override fun getAuthStatus(): Single<Boolean> = get { it.getBoolean("authStatus", false) }
     override fun setAuthStatus(value: Boolean): Completable = edit { it.putBoolean("authStatus", value) }
@@ -55,10 +53,4 @@ class Prefs(private val sharedPreferences: SharedPreferences) : IPrefs {
 
     private fun prefs(): Single<SharedPreferences> = Single
         .just(sharedPreferences)
-        //.observeOn(Schedulers.io())
-
-    companion object {
-        fun def(context: Context, name: String): IPrefs = Prefs(context.getSharedPreferences(name, MODE_PRIVATE))
-    }
-
 }

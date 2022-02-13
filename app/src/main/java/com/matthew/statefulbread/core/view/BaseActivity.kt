@@ -2,17 +2,14 @@ package com.matthew.statefulbread.core.view
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import com.matthew.statefulbread.core.Binder
 import com.matthew.statefulbread.core.TAG
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.disposables.Disposable
 
-abstract class BaseActivity<Binding: ViewBinding>(val binder: (LayoutInflater) -> Binding) : AppCompatActivity() {
+abstract class BaseActivity<Binding: ViewBinding>(val binder: Binder<Binding>) : AppCompatActivity() {
 
     val binding: Binding by lazy { binder(layoutInflater) }
     val disposable: CompositeDisposable by lazy { CompositeDisposable() }
@@ -39,8 +36,16 @@ abstract class BaseActivity<Binding: ViewBinding>(val binder: (LayoutInflater) -
         disposable.dispose()
     }
 
-    fun <T: Any> sub(req: Observable<T>) = req.subscribe().addTo(disposable)
-    fun <T: Any> sub(req: Single<T>) = req.subscribe().addTo(disposable)
-    fun sub(req: Completable) = req.subscribe().addTo(disposable)
 }
 
+
+class DisposableManager {
+    private val compositeDisposable = CompositeDisposable()
+    fun add(disposable: Disposable) {
+        compositeDisposable.add(disposable)
+    }
+
+    fun dispose() {
+        compositeDisposable.clear()
+    }
+}

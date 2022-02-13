@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.matthew.statefulbread.view.auth.Splash
+import com.matthew.statefulbread.view.auth.SplashActivity
 import com.matthew.statefulbread.view.auth.frags.Login
 import com.matthew.statefulbread.view.auth.frags.Register
 import com.matthew.statefulbread.view.main.Main
@@ -36,7 +36,7 @@ class Nav(val activity: Activity, val id: Int) : INav {
 
     override fun getCurrentTitle(): Observable<String> = currentTitle
 
-    override fun toSplash(): Completable = launchActivity(Splash::class.java)
+    override fun toSplash(): Completable = launchActivity(SplashActivity::class.java)
     override fun toRegister(): Completable = launchFragment(Register::class.java)
     override fun toLogin(): Completable = launchFragment(Login::class.java)
 

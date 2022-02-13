@@ -1,7 +1,9 @@
 package com.matthew.statefulbread.core.di
 
 import android.app.Application
-import com.matthew.statefulbread.core.Config
+import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.room.Room
 import com.matthew.statefulbread.repo.*
 import dagger.Module
 import dagger.Provides
@@ -15,14 +17,17 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideDarkMode(prefs: IPrefs): ITheme = Theme(prefs)
+    fun provideDarkMode(prefs: IPrefs): ITheme = Theme(prefs, AppCompatDelegate::setDefaultNightMode)
 
     @Provides
     @Singleton
-    fun provideStorage(app: Application): IStorage = Storage.def(app, Config.DATABASE_NAME)
+    fun provideStorage(app: Application): IStorage = Storage(Room
+        .databaseBuilder(app, AppDatabase::class.java, "StatefulBread")
+        .build()
+    )
 
     @Provides
     @Singleton
-    fun providePrefs(app: Application): IPrefs = Prefs.def(app, Config.SHAREDPREFERENCES_NAME)
+    fun providePrefs(app: Application): IPrefs = Prefs(app.getSharedPreferences("StatefulBread", Context.MODE_PRIVATE))
 
 }

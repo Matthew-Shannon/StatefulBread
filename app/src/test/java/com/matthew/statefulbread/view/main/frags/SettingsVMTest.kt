@@ -84,20 +84,22 @@ class SettingsVMTest: BaseTest() {
             .run { verify(exactly = 4) { prefs.getOwnerEmail() } }
             .run { verify(exactly = 3) { storage.userRepo() } }
             .run { verify(exactly = 2) { userDao.findByEmail(any()) } }
+
+        settingsVM.getUser().test().values().size > 0
     }
 
-    @Test fun on_get_daynight_mode() {
-        every { theme.getDarkMode() } returns Single.just(true)
-
-        settingsVM.getDayNightMode().test().dispose()
-            .run { verify(exactly = 1) { theme.getDarkMode() } }
-    }
-
-    @Test fun on_toggle_daynight_mode() {
-        every { theme.toggleDarkMode() } returns Completable.complete()
+    @Test fun on_toggle_day_night_mode() {
+        every { theme.toggleDayNightMode() } returns Completable.complete()
 
         settingsVM.toggleDayNightMode().test().dispose()
-            .run { verify(exactly = 1) { theme.toggleDarkMode() } }
+            .run { verify(exactly = 1) { theme.toggleDayNightMode() } }
+    }
+
+    @Test fun on_get_day_night_mode() {
+        every { prefs.getDayNightMode() } returns Single.just(true)
+
+        settingsVM.getDayNightMode().test().dispose()
+            .run { verify(exactly = 1) { prefs.getDayNightMode() } }
     }
 
 }

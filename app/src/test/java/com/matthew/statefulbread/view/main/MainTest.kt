@@ -63,10 +63,61 @@ class MainVMTest: BaseTest() {
     }
 
     @Test fun on_toggle_daynight_mode_call_theme_toggle_daynight_mode() {
-        every { theme.toggleDarkMode() } returns Completable.complete()
+        every { theme.toggleDayNightMode() } returns Completable.complete()
 
         mainVM.toggleDayNightMode().test().dispose()
-            .run { verify(exactly = 1) { theme.toggleDarkMode() } }
+            .run { verify(exactly = 1) { theme.toggleDayNightMode() } }
     }
 
 }
+
+//@RunWith(AndroidJUnit4::class)
+//class MainActivityTest: BaseTest() {
+//
+//    private lateinit var controller: ActivityController<Main>
+//    @MockK lateinit var theme: ITheme
+//    @MockK lateinit var nav: INav
+//
+//    @Before override fun setUp() {
+//        super.setUp()
+//        controller = Robolectric.buildActivity(Main::class.java)
+//        controller.get().mainVM = MainVM(theme, nav)
+//    }
+//
+//    @Test fun temp() {
+//        Assert.assertNotNull(controller.get())
+//    }
+
+//    @Test
+//    fun when_long_click_background_toggle_day_night_mode() {
+//        every { theme.toggleDayNightMode() } returns Completable.complete()
+//        every { prefs.getAuthStatus() } returns Single.just(true)
+//        every { nav.toMain() } returns Completable.complete()
+//
+//        controller.setup()
+//        controller.get().binding.root.performLongClick()
+//        verify(exactly = 1) { theme.toggleDayNightMode() }
+//        controller.destroy()
+//    }
+//
+//    @Test
+//    fun when_auth_nav_to_Main() {
+//        every { prefs.getAuthStatus() } returns Single.just(true)
+//        every { nav.toMain() } returns Completable.complete()
+//
+//        controller.setup()
+//        verify(exactly = 1) { nav.toMain() }
+//        controller.destroy()
+//    }
+//
+//    @Test
+//    fun when_no_auth_nav_to_Register() {
+//        every { prefs.getAuthStatus() } returns Single.just(false)
+//        every { nav.toLogin() } returns Completable.complete()
+//
+//        controller.setup()
+//        verify(exactly = 1) { nav.toLogin() }
+//        controller.destroy()
+//    }
+
+//}

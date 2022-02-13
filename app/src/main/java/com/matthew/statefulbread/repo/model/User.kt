@@ -35,13 +35,13 @@ data class User(
             password = data.getOrDefault("password", "")
         )
 
-        fun toList(user: User): List<String> = listOf(
-            "UID: ${user.id}",
-            "Age: ${user.age}",
-            "Name: ${user.name}",
-            "Email: ${user.email}",
-            "ZipCode: ${user.zipCode}",
-            "Password: ${user.password}"
+        fun explode(user: User): Map<String,String> = mapOf(
+            "id" to "${user.id}",
+            "age" to "${user.age}",
+            "name" to user.name,
+            "email" to user.email,
+            "zipCode" to user.zipCode,
+            "password" to user.password
         )
     }
 

@@ -18,7 +18,7 @@ class App : Application() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         RxDogTag.install()
         RxJavaPlugins.setErrorHandler {
-            Log.e(TAG, it.localizedMessage ?: "")
+            Log.e(TAG, it.localizedMessage!!)
             it.printStackTrace()
         }
 

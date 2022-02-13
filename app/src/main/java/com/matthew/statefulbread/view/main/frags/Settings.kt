@@ -1,11 +1,9 @@
 package com.matthew.statefulbread.view.main.frags
 
 import android.annotation.SuppressLint
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding4.view.clicks
+import com.matthew.statefulbread.core.view.GenericAdapter
 import com.matthew.statefulbread.core.view.BaseFragment
 import com.matthew.statefulbread.core.view.INav
 import com.matthew.statefulbread.core.view.MainNav
@@ -22,19 +20,22 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.addTo
 import javax.inject.Inject
 
+typealias Field = Map.Entry<String,String>
+
 @AndroidEntryPoint
+@SuppressLint("SetTextI18n", "NotifyDataSetChanged")
 class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
 
     @Inject lateinit var settingsVM: SettingsVM
 
-    private val adapter: SettingsAdapter by lazy { SettingsAdapter(layoutInflater, items) }
-    private val items: MutableList<String> by lazy { mutableListOf() }
+    private val adapter: GenericAdapter<Field,CellSettingsBinding> by lazy { GenericAdapter(items, layoutInflater, CellSettingsBinding::inflate, ::onDrawCell)  }
+    private val items: MutableList<Field> by lazy { mutableListOf() }
 
     override fun onResume() {
         super.onResume()
 
-        binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(activity)
+        binding.recyclerView.adapter = adapter
 
         binding.logoutButton.clicks()
             .flatMapCompletable { settingsVM.onLogout() }
@@ -50,10 +51,13 @@ class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
             .subscribe().addTo(disposable)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun setupRecyclerView(items: List<String>) {
+    private fun onDrawCell(field: Field, b: CellSettingsBinding) {
+        b.cellTextView.text = "${field.key}: ${field.value}"
+    }
+
+    private fun setupRecyclerView(items: Map<String,String>) {
         this.items.clear()
-        this.items.addAll(items)
+        this.items.addAll(items.entries)
         adapter.notifyDataSetChanged()
     }
 
@@ -66,18 +70,11 @@ class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
 
 }
 
-class SettingsAdapter(private val inflater: LayoutInflater, private val items: List<String>) : RecyclerView.Adapter<SettingsAdapter.ViewHolder>() {
-    inner class ViewHolder(private val binding: CellSettingsBinding) : RecyclerView.ViewHolder(binding.root) { fun bind(value: String) { binding.cellTextView.text = value } }
-    override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder = ViewHolder(CellSettingsBinding.inflate(inflater, parent, false))
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(items[position])
-    override fun getItemCount(): Int = items.size
-}
-
 class SettingsVM @Inject constructor(private val prefs: IPrefs, private val storage: IStorage, private val theme: ITheme, @MainNav private val nav: INav) {
 
-    fun getUser(): Single<List<String>> = prefs.getOwnerEmail()
-        .flatMapMaybe { id -> storage.userRepo().flatMapMaybe { it.findByEmail(id) } }
-        .map(User::toList).defaultIfEmpty(listOf())
+    fun getUser(): Single<Map<String,String>> = prefs.getOwnerEmail()
+        .flatMapMaybe { email -> storage.userRepo().flatMapMaybe { it.findByEmail(email) } }
+        .map(User::explode).defaultIfEmpty(mapOf())
 
     fun onLogout(): Completable = Completable.mergeArray(
         Completable.defer(storage::clear),
@@ -85,8 +82,8 @@ class SettingsVM @Inject constructor(private val prefs: IPrefs, private val stor
         Completable.defer(nav::toSplash)
     )
 
-    fun getDayNightMode(): Single<Boolean> = theme.getDarkMode()
+    fun getDayNightMode(): Single<Boolean> = prefs.getDayNightMode()
 
-    fun toggleDayNightMode(): Completable = theme.toggleDarkMode()
+    fun toggleDayNightMode(): Completable = theme.toggleDayNightMode()
 
 }
