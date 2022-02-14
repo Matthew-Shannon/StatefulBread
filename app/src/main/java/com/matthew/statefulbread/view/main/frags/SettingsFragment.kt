@@ -5,14 +5,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jakewharton.rxbinding4.view.clicks
 import com.matthew.statefulbread.core.view.GenericAdapter
 import com.matthew.statefulbread.core.view.BaseFragment
-import com.matthew.statefulbread.core.view.INav
-import com.matthew.statefulbread.core.view.MainNav
+import com.matthew.statefulbread.service.INav
+import com.matthew.statefulbread.service.MainNav
 import com.matthew.statefulbread.databinding.CellSettingsBinding
 import com.matthew.statefulbread.databinding.SettingsBinding
-import com.matthew.statefulbread.repo.IPrefs
-import com.matthew.statefulbread.repo.IStorage
-import com.matthew.statefulbread.repo.ITheme
-import com.matthew.statefulbread.repo.model.User
+import com.matthew.statefulbread.service.IPrefs
+import com.matthew.statefulbread.service.IStorage
+import com.matthew.statefulbread.service.ITheme
+import com.matthew.statefulbread.service.model.User
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -24,7 +24,7 @@ typealias Field = Map.Entry<String,String>
 
 @AndroidEntryPoint
 @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
-class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
+class SettingsFragment : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
 
     @Inject lateinit var settingsVM: SettingsVM
 
@@ -41,10 +41,10 @@ class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
             .flatMapCompletable { settingsVM.onLogout() }
             .subscribe().addTo(disposable)
 
-        settingsVM.getUser()
-            .doOnSuccess(::setupRecyclerView)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe().addTo(disposable)
+//        settingsVM.getUser()
+//            .doOnSuccess(::setupRecyclerView)
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe().addTo(disposable)
 
         settingsVM.getDayNightMode()
             .doOnSuccess(::setupDarkmodeCheckbox)
@@ -70,7 +70,7 @@ class Settings : BaseFragment<SettingsBinding>(SettingsBinding::inflate) {
 
 }
 
-class SettingsVM @Inject constructor(private val prefs: IPrefs, private val storage: IStorage, private val theme: ITheme, @MainNav private val nav: INav) {
+class SettingsVM @Inject constructor(private val prefs: IPrefs, private val storage: IStorage, val theme: ITheme, @MainNav private val nav: INav) {
 
     fun getUser(): Single<Map<String,String>> = prefs.getOwnerEmail()
         .flatMapMaybe { email -> storage.userRepo().flatMapMaybe { it.findByEmail(email) } }

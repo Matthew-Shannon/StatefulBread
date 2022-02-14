@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
-import com.matthew.statefulbread.repo.*
+import com.matthew.statefulbread.service.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

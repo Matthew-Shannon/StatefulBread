@@ -3,40 +3,37 @@ package com.matthew.statefulbread.view.main
 import android.view.MenuItem
 import com.jakewharton.rxbinding4.material.itemSelections
 import com.jakewharton.rxbinding4.view.longClicks
-import com.matthew.statefulbread.R
 import com.matthew.statefulbread.core.view.BaseActivity
-import com.matthew.statefulbread.core.view.INav
-import com.matthew.statefulbread.core.view.MainNav
+import com.matthew.statefulbread.service.INav
+import com.matthew.statefulbread.service.MainNav
 import com.matthew.statefulbread.databinding.MainBinding
-import com.matthew.statefulbread.repo.ITheme
+import com.matthew.statefulbread.service.ITheme
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.kotlin.addTo
+
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class Main : BaseActivity<MainBinding>(MainBinding::inflate) {
+class MainActivity : BaseActivity<MainBinding>(MainBinding::inflate) {
 
     @Inject lateinit var mainVM: MainVM
 
     override fun onResume() {
         super.onResume()
 
-        mainVM.onTitleChange()
-            .doOnNext(binding.topAppBar::setTitle)
-            .subscribe().addTo(disposable)
-
-        binding.root.longClicks()
+        disposable.add(binding.root.longClicks()
             .flatMapCompletable { mainVM.toggleDayNightMode() }
-            .subscribe().addTo(disposable)
+            .subscribe())
 
-        binding.bottomNavigation.selectedItemId = R.id.menu_settings
+        disposable.add(mainVM.onTitleChange()
+            .doOnNext(binding.topAppBar::setTitle)
+            .subscribe())
 
-        binding.bottomNavigation.itemSelections()
+        disposable.add(binding.bottomNavigation.itemSelections()
             .map(MenuItem::getTitle)
             .flatMapCompletable(mainVM::onFragSelected)
-            .subscribe().addTo(disposable)
+            .subscribe())
     }
 
 }

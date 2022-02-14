@@ -13,8 +13,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 abstract class BaseFragment<Binding: ViewBinding>(val binder: Binder<Binding>) : Fragment() {
 
-    val binding: Binding by lazy { binder(layoutInflater) }
     val disposable: CompositeDisposable by lazy { CompositeDisposable() }
+    val binding: Binding by lazy { binder(layoutInflater) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?): View? {
         Log.d(TAG, "onCreateView")
@@ -28,7 +28,7 @@ abstract class BaseFragment<Binding: ViewBinding>(val binder: Binder<Binding>) :
 
     override fun onStop() {
         super.onStop()
-        Log.d("TAG", "onStop")
+        Log.d(TAG, "onStop")
     }
 
     override fun onDestroy() {
@@ -37,7 +37,7 @@ abstract class BaseFragment<Binding: ViewBinding>(val binder: Binder<Binding>) :
     }
 
     override fun onDestroyView() {
-        disposable.clear()
+        disposable.dispose()
         super.onDestroyView()
     }
 

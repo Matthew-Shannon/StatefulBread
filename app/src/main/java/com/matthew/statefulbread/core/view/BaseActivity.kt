@@ -7,12 +7,11 @@ import androidx.viewbinding.ViewBinding
 import com.matthew.statefulbread.core.Binder
 import com.matthew.statefulbread.core.TAG
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
 
 abstract class BaseActivity<Binding: ViewBinding>(val binder: Binder<Binding>) : AppCompatActivity() {
 
-    val binding: Binding by lazy { binder(layoutInflater) }
     val disposable: CompositeDisposable by lazy { CompositeDisposable() }
+    val binding: Binding by lazy { binder(layoutInflater) }
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
@@ -27,7 +26,7 @@ abstract class BaseActivity<Binding: ViewBinding>(val binder: Binder<Binding>) :
 
     override fun onStop() {
         super.onStop()
-        Log.d("TAG", "onStop")
+        Log.d(TAG, "onStop")
     }
 
     override fun onDestroy() {
@@ -36,16 +35,4 @@ abstract class BaseActivity<Binding: ViewBinding>(val binder: Binder<Binding>) :
         disposable.dispose()
     }
 
-}
-
-
-class DisposableManager {
-    private val compositeDisposable = CompositeDisposable()
-    fun add(disposable: Disposable) {
-        compositeDisposable.add(disposable)
-    }
-
-    fun dispose() {
-        compositeDisposable.clear()
-    }
 }

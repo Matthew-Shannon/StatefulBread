@@ -1,4 +1,4 @@
-package com.matthew.statefulbread.repo
+package com.matthew.statefulbread.service
 
 import androidx.appcompat.app.AppCompatDelegate
 import com.matthew.statefulbread.core.BaseTest
@@ -17,8 +17,7 @@ class ThemeTest: BaseTest() {
     @MockK lateinit var onSet: Consumer<Int>
     private lateinit var theme: Theme
 
-    @Before
-    override fun setUp() {
+    @Before override fun setUp() {
         super.setUp()
         theme = Theme(prefs, onSet)
     }

@@ -1,23 +1,23 @@
 package com.matthew.statefulbread.view.auth
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.matthew.statefulbread.core.BaseTest
-import com.matthew.statefulbread.core.view.INav
-import com.matthew.statefulbread.databinding.SplashBinding
-import com.matthew.statefulbread.repo.IPrefs
-import com.matthew.statefulbread.repo.IStorage
-import com.matthew.statefulbread.repo.ITheme
+import com.matthew.statefulbread.core.MockApp
+import com.matthew.statefulbread.core.RoboActivityRule
+import com.matthew.statefulbread.service.INav
+import com.matthew.statefulbread.service.IPrefs
+import com.matthew.statefulbread.service.IStorage
+import com.matthew.statefulbread.service.ITheme
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import io.mockk.verify
-import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.annotation.Config
 
 class SplashActivityVMTest: BaseTest() {
 
@@ -73,12 +73,11 @@ class SplashActivityVMTest: BaseTest() {
 
 }
 
+@RunWith(AndroidJUnit4::class)
+@Config(application = MockApp::class)
+class SplashActivityTest: BaseTest() {
 
-class SplashHelperTest: BaseTest() {
-
-    private lateinit var helper: SplashHelper
-    @MockK lateinit var disposable: CompositeDisposable
-    @MockK lateinit var binding: SplashBinding
+    @Rule @JvmField var robo = RoboActivityRule(SplashActivity::class.java)
     @MockK lateinit var storage: IStorage
     @MockK lateinit var prefs: IPrefs
     @MockK lateinit var theme: ITheme
@@ -86,41 +85,34 @@ class SplashHelperTest: BaseTest() {
 
     @Before override fun setUp() {
         super.setUp()
-        helper = SplashHelper(SplashVM(prefs, storage, theme, nav))
+        every { nav.toMain() } returns Completable.complete()
+        every { nav.toLogin() } returns Completable.complete()
         every { theme.initDayNightMode() } returns Completable.complete()
-        every { disposable.add(any()) }  returns true
-        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+        robo.controller.get().splashVM = SplashVM(prefs, storage, theme, nav)
+    }
 
+    @Test fun when_auth_nav_to_Main() {
+        every { theme.toggleDayNightMode() } returns Completable.complete()
+        every { prefs.getAuthStatus() } returns Single.just(true)
+
+        robo.controller.setup()
+        verify(exactly = 1) { nav.toMain() }
+    }
+
+    @Test fun when_no_auth_nav_to_Register() {
+        every { theme.toggleDayNightMode() } returns Completable.complete()
+        every { prefs.getAuthStatus() } returns Single.just(false)
+
+        robo.controller.setup()
+        verify(exactly = 1) { nav.toLogin() }
     }
 
     @Test fun when_long_click_background_toggle_day_night_mode() {
         every { theme.toggleDayNightMode() } returns Completable.complete()
         every { prefs.getAuthStatus() } returns Single.just(true)
-        every { nav.toMain() } returns Completable.complete()
 
-        every { binding.root } returns mockk()
-
-        //helper.onResume(disposable, binding)
-
-        Assert.assertNotNull(binding.root)
-        //help.root.performLongClick()
-        //verify(exactly = 1) { theme.toggleDayNightMode() }
+        robo.controller.setup().get().binding.root.performLongClick()
+        verify(exactly = 1) { theme.toggleDayNightMode() }
     }
-
-//    @Test fun when_auth_nav_to_Main() {
-//        every { prefs.getAuthStatus() } returns Single.just(true)
-//        every { nav.toMain() } returns Completable.complete()
-//
-//        controller.setup()
-//        verify(exactly = 1) { nav.toMain() }
-//    }
-//
-//    @Test fun when_no_auth_nav_to_Register() {
-//        every { prefs.getAuthStatus() } returns Single.just(false)
-//        every { nav.toLogin() } returns Completable.complete()
-//
-//        controller.setup()
-//        verify(exactly = 1) { nav.toLogin() }
-//    }
 
 }

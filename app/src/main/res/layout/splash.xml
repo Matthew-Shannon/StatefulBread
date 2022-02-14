@@ -7,7 +7,7 @@
     android:background="?attr/colorSurface"
     tools:context=".view.auth.SplashActivity">
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

@@ -1,9 +1,9 @@
-package com.matthew.statefulbread.repo
+package com.matthew.statefulbread.service
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.matthew.statefulbread.repo.model.User
-import com.matthew.statefulbread.repo.model.UserDao
+import com.matthew.statefulbread.service.model.User
+import com.matthew.statefulbread.service.model.UserDao
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers

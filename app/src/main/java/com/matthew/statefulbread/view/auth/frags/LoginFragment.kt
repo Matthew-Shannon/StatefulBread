@@ -2,12 +2,12 @@ package com.matthew.statefulbread.view.auth.frags
 
 import com.jakewharton.rxbinding4.view.clicks
 import com.matthew.statefulbread.core.view.BaseFragment
-import com.matthew.statefulbread.core.view.INav
-import com.matthew.statefulbread.core.view.SplashNav
+import com.matthew.statefulbread.service.INav
+import com.matthew.statefulbread.service.SplashNav
 import com.matthew.statefulbread.databinding.LoginBinding
-import com.matthew.statefulbread.repo.IPrefs
-import com.matthew.statefulbread.repo.IStorage
-import com.matthew.statefulbread.repo.model.User
+import com.matthew.statefulbread.service.IPrefs
+import com.matthew.statefulbread.service.IStorage
+import com.matthew.statefulbread.service.model.User
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -17,7 +17,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class Login : BaseFragment<LoginBinding>(LoginBinding::inflate) {
+class LoginFragment : BaseFragment<LoginBinding>(LoginBinding::inflate) {
 
     @Inject lateinit var loginVM: LoginVM
 
@@ -33,21 +33,21 @@ class Login : BaseFragment<LoginBinding>(LoginBinding::inflate) {
             .subscribe().addTo(disposable)
     }
 
-    private fun onSubmit(data: Map<String,String>) = loginVM
+    fun onSubmit(data: Map<String,String>) = loginVM
         .onAttempt(data)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribeBy(this::onError)
         .addTo(disposable)
 
-    private fun onError(ex: Throwable) = when (ex) {
+    fun onError(ex: Throwable) = when (ex) {
         is EmailBlankEx, is EmailInvalidEx, is EmailExistsEx -> binding.emailEditText.error = ex.message
         is PasswordBlankEx, is IncorrectCredentialsEx -> binding.passwordEditText.error = ex.message
         else -> {}
     }
 
-    private fun getData(): Map<String,String>  = mapOf(
-        "email" to binding.emailEditText.text?.trim()?.toString().orEmpty(),
-        "password" to binding.passwordEditText.text?.trim()?.toString().orEmpty()
+    fun getData(): Map<String,String>  = mapOf(
+        "email" to binding.emailEditText.text!!.trim().toString(),
+        "password" to binding.passwordEditText.text!!.trim().toString()
     )
 
 }

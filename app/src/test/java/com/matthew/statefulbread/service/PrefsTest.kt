@@ -1,4 +1,4 @@
-package com.matthew.statefulbread.repo
+package com.matthew.statefulbread.service
 
 import android.content.SharedPreferences
 import com.matthew.statefulbread.core.BaseTest
@@ -14,8 +14,7 @@ class PrefsTest: BaseTest() {
     @MockK lateinit var sharedPreferences: SharedPreferences
     private lateinit var prefs: Prefs
 
-    @Before
-    override fun setUp() {
+    @Before override fun setUp() {
         super.setUp()
         prefs = Prefs(sharedPreferences)
     }

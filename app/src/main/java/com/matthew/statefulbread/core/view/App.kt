@@ -6,7 +6,6 @@ import com.google.android.material.color.DynamicColors
 import com.matthew.statefulbread.core.TAG
 import dagger.hilt.android.HiltAndroidApp
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
-import rxdogtag2.RxDogTag
 
 @HiltAndroidApp
 class App : Application() {
@@ -16,7 +15,6 @@ class App : Application() {
         super.onCreate()
         Log.d(TAG, "onCreate")
         DynamicColors.applyToActivitiesIfAvailable(this)
-        RxDogTag.install()
         RxJavaPlugins.setErrorHandler {
             Log.e(TAG, it.localizedMessage!!)
             it.printStackTrace()

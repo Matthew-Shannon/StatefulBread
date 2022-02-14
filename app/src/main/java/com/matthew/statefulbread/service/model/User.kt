@@ -1,4 +1,4 @@
-package com.matthew.statefulbread.repo.model
+package com.matthew.statefulbread.service.model
 
 import androidx.room.*
 import io.reactivex.rxjava3.core.Completable

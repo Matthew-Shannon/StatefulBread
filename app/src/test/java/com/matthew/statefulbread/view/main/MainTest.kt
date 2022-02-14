@@ -1,15 +1,22 @@
 package com.matthew.statefulbread.view.main
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.matthew.statefulbread.R
 import com.matthew.statefulbread.core.BaseTest
-import com.matthew.statefulbread.core.view.INav
-import com.matthew.statefulbread.repo.ITheme
+import com.matthew.statefulbread.core.MockApp
+import com.matthew.statefulbread.core.RoboActivityRule
+import com.matthew.statefulbread.service.INav
+import com.matthew.statefulbread.service.ITheme
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.annotation.Config
 
 class MainVMTest: BaseTest() {
 
@@ -71,53 +78,53 @@ class MainVMTest: BaseTest() {
 
 }
 
-//@RunWith(AndroidJUnit4::class)
-//class MainActivityTest: BaseTest() {
-//
-//    private lateinit var controller: ActivityController<Main>
-//    @MockK lateinit var theme: ITheme
-//    @MockK lateinit var nav: INav
-//
-//    @Before override fun setUp() {
-//        super.setUp()
-//        controller = Robolectric.buildActivity(Main::class.java)
-//        controller.get().mainVM = MainVM(theme, nav)
-//    }
-//
-//    @Test fun temp() {
-//        Assert.assertNotNull(controller.get())
-//    }
+@RunWith(AndroidJUnit4::class)
+@Config(application = MockApp::class)
+class MainActivityTest: BaseTest() {
 
-//    @Test
-//    fun when_long_click_background_toggle_day_night_mode() {
-//        every { theme.toggleDayNightMode() } returns Completable.complete()
-//        every { prefs.getAuthStatus() } returns Single.just(true)
-//        every { nav.toMain() } returns Completable.complete()
-//
-//        controller.setup()
-//        controller.get().binding.root.performLongClick()
-//        verify(exactly = 1) { theme.toggleDayNightMode() }
-//        controller.destroy()
-//    }
-//
-//    @Test
-//    fun when_auth_nav_to_Main() {
-//        every { prefs.getAuthStatus() } returns Single.just(true)
-//        every { nav.toMain() } returns Completable.complete()
-//
-//        controller.setup()
-//        verify(exactly = 1) { nav.toMain() }
-//        controller.destroy()
-//    }
-//
-//    @Test
-//    fun when_no_auth_nav_to_Register() {
-//        every { prefs.getAuthStatus() } returns Single.just(false)
-//        every { nav.toLogin() } returns Completable.complete()
-//
-//        controller.setup()
-//        verify(exactly = 1) { nav.toLogin() }
-//        controller.destroy()
-//    }
+    @Rule @JvmField var robo = RoboActivityRule(MainActivity::class.java)
 
-//}
+    @MockK lateinit var theme: ITheme
+    @MockK lateinit var nav: INav
+
+    @Before override fun setUp() {
+        super.setUp()
+        robo.controller.get().mainVM = MainVM(theme, nav)
+        every { nav.toHome() } returns Completable.complete()
+        every { nav.getCurrentTitle() } returns Observable.just("")
+    }
+
+    @Test
+    fun on_root_long_click() {
+        every { theme.toggleDayNightMode() } returns Completable.complete()
+
+        robo.controller.setup().get().binding.root.performLongClick()
+        verify(exactly = 1) { theme.toggleDayNightMode() }
+    }
+
+    @Test
+    fun on_title_changed() {
+        every { nav.toHome() } returns Completable.complete()
+        every { nav.toSearch() } returns Completable.complete()
+        every { nav.toCategories() } returns Completable.complete()
+        every { nav.toFavorites() } returns Completable.complete()
+        every { nav.toSettings() } returns Completable.complete()
+
+        robo.controller.setup()
+        robo.controller.get().binding.bottomNavigation.selectedItemId = R.id.menu_home
+        verify(exactly = 2) { nav.toHome() }
+
+        robo.controller.get().binding.bottomNavigation.selectedItemId = R.id.menu_search
+        verify(exactly = 1) { nav.toSearch() }
+
+        robo.controller.get().binding.bottomNavigation.selectedItemId = R.id.menu_categories
+        verify(exactly = 1) { nav.toCategories() }
+
+        robo.controller.get().binding.bottomNavigation.selectedItemId = R.id.menu_favorites
+        verify(exactly = 1) { nav.toFavorites() }
+
+        robo.controller.get().binding.bottomNavigation.selectedItemId = R.id.menu_settings
+        verify(exactly = 1) { nav.toSettings() }
+    }
+
+}

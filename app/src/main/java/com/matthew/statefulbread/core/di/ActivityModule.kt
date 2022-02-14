@@ -1,11 +1,13 @@
 package com.matthew.statefulbread.core.di
 
 import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import com.matthew.statefulbread.R
-import com.matthew.statefulbread.core.view.INav
-import com.matthew.statefulbread.core.view.MainNav
-import com.matthew.statefulbread.core.view.Nav
-import com.matthew.statefulbread.core.view.SplashNav
+import com.matthew.statefulbread.service.INav
+import com.matthew.statefulbread.service.MainNav
+import com.matthew.statefulbread.service.Nav
+import com.matthew.statefulbread.service.SplashNav
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,10 +19,18 @@ class ActivityModule {
 
     @SplashNav
     @Provides
-    fun provideSplashNav(activity: Activity): INav = Nav(activity, R.id.splash_container)
+    fun provideFragManagerSplash(activity: Activity): FragmentManager = (activity as AppCompatActivity).supportFragmentManager
 
     @MainNav
     @Provides
-    fun provideMainNav(activity: Activity): INav = Nav(activity, R.id.main_container)
+    fun provideFragManagerMain(activity: Activity): FragmentManager = (activity as AppCompatActivity).supportFragmentManager
+
+    @SplashNav
+    @Provides
+    fun provideSplashNav(activity: Activity, @SplashNav fragmentManager: FragmentManager): INav = Nav(activity, fragmentManager, R.id.splash_container)
+
+    @MainNav
+    @Provides
+    fun provideMainNav(activity: Activity, @MainNav fragmentManager: FragmentManager): INav = Nav(activity, fragmentManager, R.id.main_container)
 
 }

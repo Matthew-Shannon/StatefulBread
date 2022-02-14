@@ -1,4 +1,4 @@
-package com.matthew.statefulbread.repo
+package com.matthew.statefulbread.service
 
 import androidx.appcompat.app.AppCompatDelegate
 import io.reactivex.rxjava3.core.Completable

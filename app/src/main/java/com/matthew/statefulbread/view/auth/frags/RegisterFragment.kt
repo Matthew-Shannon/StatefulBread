@@ -2,11 +2,11 @@ package com.matthew.statefulbread.view.auth.frags
 
 import com.jakewharton.rxbinding4.view.clicks
 import com.matthew.statefulbread.core.view.BaseFragment
-import com.matthew.statefulbread.core.view.INav
-import com.matthew.statefulbread.core.view.SplashNav
+import com.matthew.statefulbread.service.INav
+import com.matthew.statefulbread.service.SplashNav
 import com.matthew.statefulbread.databinding.RegisterBinding
-import com.matthew.statefulbread.repo.IStorage
-import com.matthew.statefulbread.repo.model.User
+import com.matthew.statefulbread.service.IStorage
+import com.matthew.statefulbread.service.model.User
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -16,7 +16,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class Register : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
+class RegisterFragment : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
 
     @Inject lateinit var registerVM: RegisterVM
 
@@ -32,13 +32,13 @@ class Register : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
             .subscribe().addTo(disposable)
     }
 
-    private fun onSubmit(data: Map<String,String>) = registerVM
+    fun onSubmit(data: Map<String,String>) = registerVM
         .onAttempt(data)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribeBy(this::onError)
         .addTo(disposable)
 
-    private fun onError(ex: Throwable) = when (ex) {
+    fun onError(ex: Throwable) = when (ex) {
         is EmailBlankEx, is EmailInvalidEx, is EmailExistsEx -> binding.emailEditText.error = ex.message
         is NameBlankEx -> binding.nameEditText.error = ex.message
         is ZipCodeBlankEx -> binding.zipCodeEditText.error = ex.message
@@ -46,12 +46,12 @@ class Register : BaseFragment<RegisterBinding>(RegisterBinding::inflate) {
         else -> {}
     }
 
-    private fun getData(): Map<String,String>  = mapOf(
+    fun getData(): Map<String,String>  = mapOf(
         "age" to "0",
-        "name" to binding.nameEditText.text?.trim()?.toString().orEmpty(),
-        "email" to binding.emailEditText.text?.trim()?.toString().orEmpty(),
-        "zipCode" to binding.zipCodeEditText.text?.trim()?.toString().orEmpty(),
-        "password" to binding.passwordEditText.text?.trim()?.toString().orEmpty()
+        "name" to binding.nameEditText.text!!.trim().toString(),
+        "email" to binding.emailEditText.text!!.trim().toString(),
+        "zipCode" to binding.zipCodeEditText.text!!.trim().toString(),
+        "password" to binding.passwordEditText.text!!.trim().toString()
     )
 
 }

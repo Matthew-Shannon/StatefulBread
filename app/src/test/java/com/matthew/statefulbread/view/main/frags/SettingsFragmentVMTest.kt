@@ -1,12 +1,12 @@
 package com.matthew.statefulbread.view.main.frags
 
 import com.matthew.statefulbread.core.BaseTest
-import com.matthew.statefulbread.core.view.INav
-import com.matthew.statefulbread.repo.IPrefs
-import com.matthew.statefulbread.repo.IStorage
-import com.matthew.statefulbread.repo.ITheme
-import com.matthew.statefulbread.repo.model.User
-import com.matthew.statefulbread.repo.model.UserDao
+import com.matthew.statefulbread.service.INav
+import com.matthew.statefulbread.service.IPrefs
+import com.matthew.statefulbread.service.IStorage
+import com.matthew.statefulbread.service.ITheme
+import com.matthew.statefulbread.service.model.User
+import com.matthew.statefulbread.service.model.UserDao
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
@@ -17,7 +17,7 @@ import io.reactivex.rxjava3.core.Single
 import org.junit.Before
 import org.junit.Test
 
-class SettingsVMTest: BaseTest() {
+class SettingsFragmentVMTest: BaseTest() {
 
     @MockK lateinit var storage: IStorage
     @MockK lateinit var prefs: IPrefs
